@@ -47,8 +47,9 @@ body::before{
     radial-gradient(ellipse 700px 500px at 50% 90%,rgba(59,130,246,0.08) 0%,transparent 60%);
   pointer-events:none;z-index:0;
 }
-.page{display:none;min-height:100vh;position:relative;z-index:2;padding-bottom:80px;}
+.page{display:none;min-height:100vh;position:relative;z-index:2;padding-bottom:80px;max-width:480px;margin:0 auto;}
 .page.active{display:block;animation:fadeIn .4s ease;}
+.page.auth-page.active{display:flex;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 @keyframes slideUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
@@ -69,6 +70,7 @@ body::before{
   font-size:14px;font-weight:600;cursor:pointer;
   transition:all .2s ease;font-family:var(--sans);
   display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  position:relative;z-index:10;
 }
 .btn:active{transform:scale(.97);}
 .btn-primary{

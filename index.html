@@ -216,6 +216,7 @@ textarea.input{resize:none;line-height:1.7;}
 .inbox-item.unread{border-left:3px solid var(--primary);}
 .inbox-q{font-size:14px;line-height:1.7;margin-bottom:10px;}
 .inbox-a{font-size:13px;line-height:1.7;color:var(--text-soft);padding:10px 12px;background:rgba(139,92,246,0.08);border-radius:8px;border-left:2px solid var(--secondary);margin-bottom:10px;}
+.inbox-asker{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);}
 .inbox-meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
 .inbox-time{font-size:11px;color:var(--text-mute);}
 .inbox-btns{display:flex;gap:8px;}
@@ -844,8 +845,20 @@ function renderInboxList(messages){
   if(filtered.length===0){container.innerHTML='<div class="empty"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><p>暂无提问</p></div>';return;}
   container.innerHTML=filtered.slice().reverse().map(m=>{
     const replies=appData.messages.filter(r=>r.parentId===m.id);
+    let askerHtml='';
+    if(m.askerUserId){
+      if(m.isRevealed||checkVip(currentUser)){
+        const asker=appData.users.find(u=>u.id===m.askerUserId);
+        askerHtml='<div class="inbox-asker"><span class="badge badge-revealed">提问者: '+escapeHtml(asker?asker.nickname+' ('+asker.account+')':(m.askerNickname||'未知'))+'</span></div>';
+      }else{
+        askerHtml='<div class="inbox-asker"><button class="reveal-btn" onclick="revealIdentity(\''+m.id+'\')">查看提问者身份 '+CONFIG.PRICE_REVEAL+'元</button></div>';
+      }
+    }else{
+      askerHtml='<div class="inbox-asker"><span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-mute);">未登录匿名提问</span></div>';
+    }
     return `
     <div class="card inbox-item ${!m.reply?'unread':''}">
+      ${askerHtml}
       <div class="inbox-q">${escapeHtml(m.content)}</div>
       ${m.reply?'<div class="inbox-a">'+escapeHtml(m.reply)+'</div>':''}
       ${replies.length>0?'<div style="margin-bottom:10px;font-size:11px;color:var(--text-mute);">'+replies.length+' 条追问</div>':''}
@@ -955,14 +968,20 @@ function renderBoxQa(messages){
   }).join('');
 }
 document.getElementById('boxInput').addEventListener('input',function(){document.getElementById('boxCharCount').textContent=this.value.length+'/500';});
+let submittingQuestion=false;
 async function submitQuestion(){
+  if(submittingQuestion)return;
+  submittingQuestion=true;
+  const sendBtn=document.querySelector('#boxInputSection .btn-primary');
+  if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='发送中...';}
+  try{
   const content=document.getElementById('boxInput').value.trim();
   if(!content){showToast('请输入问题内容');return;}
   if(containsSensitive(content)){showToast('内容包含敏感词，请修改后再发送');return;}
   const user=appData.users.find(u=>u.id===currentBoxUserId);
   if(!user||!user.boxEnabled){showToast('提问箱已关闭');return;}
   if(currentUser&&(user.blacklist||[]).includes(currentUser.id)){showToast('你已被该用户拉黑');return;}
-  const newMsg={id:generateId('msg'),userId:currentBoxUserId,content:content,reply:'',replyTime:'',isPublic:false,isFavorite:false,createdAt:new Date().toISOString(),askerUserId:currentUser?currentUser.id:null,askerNickname:currentUser?currentUser.nickname:'匿名用户',isRevealed:false,likes:0,parentId:null};
+  const newMsg={id:generateId('msg'),userId:currentBoxUserId,content:content,reply:'',replyTime:'',isPublic:false,isFavorite:false,createdAt:new Date().toISOString(),askerUserId:currentUser?currentUser.id:null,askerNickname:currentUser?currentUser.nickname:'匿名用户',askerAccount:currentUser?currentUser.account:'',isRevealed:false,likes:0,parentId:null};
   appData.messages.push(newMsg);
   addNotification(currentBoxUserId,'question','你收到了一条新提问',newMsg.id);
   await saveData();
@@ -970,6 +989,10 @@ async function submitQuestion(){
   document.getElementById('boxInput').value='';
   document.getElementById('boxCharCount').textContent='0/500';
   loadBox();
+  }finally{
+    submittingQuestion=false;
+    if(sendBtn){sendBtn.disabled=false;sendBtn.textContent='发送提问';}
+  }
 }
 async function toggleFollow(userId){
   if(!currentUser){showToast('请先登录');navigate('auth');return;}
@@ -996,7 +1019,7 @@ function revealIdentity(msgId){
   const msg=appData.messages.find(m=>m.id===msgId);
   if(!msg)return;
   if(msg.isRevealed){showToast('该问题已解锁');return;}
-  if(checkVip(currentUser)){msg.isRevealed=true;saveData();renderBoxQa(appData.messages.filter(m=>m.userId===currentBoxUserId&&m.isPublic&&m.reply&&!m.parentId));showToast('VIP特权：已解锁');return;}
+  if(checkVip(currentUser)){msg.isRevealed=true;saveData();if(currentPage==='inbox'){loadInbox();}else if(currentPage==='box'){renderBoxQa(appData.messages.filter(m=>m.userId===currentBoxUserId&&m.isPublic&&m.reply&&!m.parentId));}showToast('VIP特权：已解锁');return;}
   openPayModal('reveal',msgId);
 }
 function openVipCenter(){if(!currentUser){showToast('请先登录');navigate('auth');return;}openPayModal('vip',null);}

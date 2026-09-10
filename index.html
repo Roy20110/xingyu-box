@@ -405,7 +405,7 @@ textarea.input{resize:none;line-height:1.7;}
 .upload-preview{width:70px;height:70px;margin:0 auto 12px;border-radius:10px;overflow:hidden;display:none;}
 .upload-preview img{width:100%;height:100%;object-fit:cover;}
 .qr-box{width:260px;height:260px;margin:16px auto 0;background:#fff;border-radius:14px;padding:10px;display:flex;align-items:center;justify-content:center;}
-.qr-box canvas,.qr-box img{width:240px;height:240px;border-radius:6px;}
+.qr-box canvas,.qr-box img{width:240px;height:240px;border-radius:6px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;-webkit-tap-highlight-color:transparent;}
 .qr-share-text{font-size:12px;color:var(--text-soft);text-align:center;margin:12px 0 4px;line-height:1.7;white-space:pre-line;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;word-break:break-all;}
 .qr-hint{font-size:11px;color:var(--text-mute);text-align:center;margin-bottom:14px;line-height:1.6;}
 .modal-tip{font-size:11px;color:var(--text-mute);margin-top:14px;line-height:1.7;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;}
@@ -627,13 +627,15 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
   <div class="modal qr-modal">
     <div class="modal-title">我的永久提问箱二维码</div>
     <div class="qr-box">
-      <canvas id="qrcodeCanvas" width="260" height="260"></canvas>
-      <img id="qrcodeImg" alt="提问箱二维码" style="display:none;width:260px;height:260px;">
+      <canvas id="qrcodeCanvas" width="520" height="520"></canvas>
+      <img id="qrcodeImg" alt="提问箱二维码" style="display:none;width:100%;height:auto;">
     </div>
-    <div class="qr-share-text" id="qrText"></div>
-    <div class="qr-hint">二维码永久不变。保存方式：点下面按钮，或用手指长按二维码图片选择"保存图片"</div>
-    <button class="btn btn-primary" style="width:100%;" onclick="saveQrImage()">保存二维码图片</button>
-    <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="copyQrText()">复制提问箱链接</button>
+    <div class="qr-hint">长按上方图片可直接保存，永久不变</div>
+    <button class="btn btn-primary" style="width:100%;" onclick="saveQrImage()">保存图片到相册</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="shareToWechat('friend')">分享到微信好友</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="shareToWechat('timeline')">分享到微信朋友圈</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="shareToQQ('friend')">分享到QQ好友</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="shareToQQ('zone')">分享到QQ空间</button>
     <button class="modal-close" onclick="closeModal('qrModal')">关闭</button>
   </div>
 </div>
@@ -1123,17 +1125,15 @@ function getBoxUrl(userId){
 function openQrModal(){
   if(!currentUser){showToast('请先登录');return;}
   const boxUrl=getBoxUrl(currentUser.id);
-  const shareText='Hi，我正在使用<星语信箱>，点击下方链接，来向我匿名提问吧，Ask me anything\n'+boxUrl;
-  document.getElementById('qrText').textContent=shareText;
+  const nickname=currentUser.nickname||'我';
   const canvas=document.getElementById('qrcodeCanvas');
   const img=document.getElementById('qrcodeImg');
   canvas.style.display='block';img.style.display='none';
-  if(window.QRCode){
-    QRCode.toCanvas(canvas,boxUrl,{width:260,margin:2,color:{dark:'#000000',light:'#ffffff'}}).then(function(){
-      img.src=canvas.toDataURL('image/png');
-      canvas.style.display='none';img.style.display='block';
-    }).catch(function(){showToast('二维码生成失败');});
-  }else{showToast('二维码组件加载中，请稍后重试');}
+  if(!window.QRCode){showToast('二维码组件加载中，请稍后重试');return;}
+  QRCode.toCanvas(canvas,boxUrl,{width:520,margin:2,color:{dark:'#000000',light:'#ffffff'}}).then(function(){
+    img.src=canvas.toDataURL('image/png');
+    canvas.style.display='none';img.style.display='block';
+  }).catch(function(){showToast('二维码生成失败');});
   document.getElementById('qrModal').classList.add('active');
 }
 function saveQrImage(){
@@ -1160,10 +1160,37 @@ function saveQrImage(){
     showToast('请长按上方二维码图片保存');
   }
 }
-function copyQrText(){
-  const txt=document.getElementById('qrText').textContent;
-  if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){showToast('链接已复制');}).catch(function(){fallbackCopy(txt);});}
-  else{fallbackCopy(txt);}
+function shareToWechat(type){
+  if(!currentUser){showToast('请先登录');return;}
+  const link=getBoxUrl(currentUser.id);
+  const title='星语信箱 · 匿名提问箱';
+  const desc='Hi，我正在使用<星语信箱>，来向我匿名提问吧，Ask me anything';
+  if(window.WeixinJSBridge){
+    try{
+      if(type==='timeline'){WeixinJSBridge.invoke('shareTimeline',{title:title,link:link,desc:desc});}
+      else{WeixinJSBridge.invoke('shareAppMessage',{title:title,link:link,desc:desc,imgUrl:''});}
+      showToast('请在微信里确认发送');
+      return;
+    }catch(e){}
+  }
+  const shareText=desc+'\n'+link;
+  fallbackCopy(shareText);
+  showToast('已复制，请打开微信粘贴发送');
+}
+function shareToQQ(type){
+  if(!currentUser){showToast('请先登录');return;}
+  const link=getBoxUrl(currentUser.id);
+  const title='星语信箱 · 匿名提问箱';
+  const desc='Hi，我正在使用<星语信箱>，来向我匿名提问吧，Ask me anything';
+  const enc=encodeURIComponent;
+  let scheme='';
+  if(type==='zone'){
+    scheme='mqqapi://share/to_qzone?src_type=web&version=1&file_type=news&title='+enc(title)+'&url='+enc(link)+'&description='+enc(desc);
+  }else{
+    scheme='mqqapi://share/to_fri?src_type=web&version=1&file_type=news&title='+enc(title)+'&url='+enc(link)+'&description='+enc(desc);
+  }
+  try{window.location.href=scheme;}catch(e){}
+  showToast('正在打开QQ，请确认发送');
 }
 
 // ===== 付费系统 =====

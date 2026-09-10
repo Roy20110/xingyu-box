@@ -1139,6 +1139,14 @@ function openQrModal(){
 function saveQrImage(){
   const img=document.getElementById('qrcodeImg');
   if(!img.src||img.src.length<100){showToast('二维码还没生成好');return;}
+  if(window.AndroidBridge){
+    try{
+      const data=img.src.split(',')[1];
+      const ok=AndroidBridge.saveImage(data);
+      if(ok){showToast('已保存到相册');}else{showToast('保存失败，请长按图片保存');}
+    }catch(e){showToast('保存失败，请长按图片保存');}
+    return;
+  }
   try{
     const dataUrl=img.src;
     const parts=dataUrl.split(',');
@@ -1165,6 +1173,15 @@ function shareToWechat(type){
   const link=getBoxUrl(currentUser.id);
   const title='星语信箱 · 匿名提问箱';
   const desc='Hi，我正在使用<星语信箱>，来向我匿名提问吧，Ask me anything';
+  if(window.AndroidBridge){
+    try{
+      AndroidBridge.shareImage(document.getElementById('qrcodeImg').src.split(',')[1]);
+      return;
+    }catch(e){
+      AndroidBridge.shareText(desc+'\n'+link);
+      return;
+    }
+  }
   if(window.WeixinJSBridge){
     try{
       if(type==='timeline'){WeixinJSBridge.invoke('shareTimeline',{title:title,link:link,desc:desc});}
@@ -1182,6 +1199,12 @@ function shareToQQ(type){
   const link=getBoxUrl(currentUser.id);
   const title='星语信箱 · 匿名提问箱';
   const desc='Hi，我正在使用<星语信箱>，来向我匿名提问吧，Ask me anything';
+  if(window.AndroidBridge){
+    try{
+      AndroidBridge.shareImage(document.getElementById('qrcodeImg').src.split(',')[1]);
+      return;
+    }catch(e){}
+  }
   const enc=encodeURIComponent;
   let scheme='';
   if(type==='zone'){

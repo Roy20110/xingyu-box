@@ -588,6 +588,7 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
     <div class="upload-preview" id="payUploadPreview"><img id="payPreviewImg" src=""></div>
     <button class="btn btn-ghost" style="width:100%;margin-bottom:12px;" onclick="document.getElementById('payScreenshotInput').click()">上传转账截图</button>
     <input type="file" id="payScreenshotInput" accept="image/*" style="display:none" onchange="handlePayScreenshot(this)">
+    <div class="modal-tip" id="paySizeHint" style="margin-top:8px;">截图会自动压缩后再提交</div>
     <button class="btn btn-primary" id="paySubmitBtn" style="width:100%;" onclick="submitPayOrder()" disabled>提交订单等待审核</button>
     <button class="modal-close" onclick="closeModal('payModal')">取消</button>
     <div class="modal-tip">请长按识别赞赏码支付对应金额，然后上传转账截图，管理员审核通过后自动解锁。</div>
@@ -716,14 +717,30 @@ async function loadData(){
     if(!appData.notifications)appData.notifications=[];
   }catch(e){console.error('加载失败',e);appData={users:[],messages:[],payOrders:[],notifications:[],siteNotice:''};}
 }
+let saveChain=Promise.resolve();
 async function saveData(){
-  try{
-    const res=await fetch(CONFIG.API_BASE+'/'+CONFIG.BIN_ID+'/latest',{headers:{'X-Access-Key':CONFIG.ACCESS_KEY}});
-    const data=await res.json();
-    const record=data.record||{};
-    record.xingyuBox=appData;
-    await fetch(CONFIG.API_BASE+'/'+CONFIG.BIN_ID,{method:'PUT',headers:{'Content-Type':'application/json','X-Access-Key':CONFIG.ACCESS_KEY},body:JSON.stringify(record)});
-  }catch(e){console.error('保存失败',e);showToast('保存失败，请重试');}
+  saveChain=saveChain.then(async function(){
+    try{
+      const res=await fetch(CONFIG.API_BASE+'/'+CONFIG.BIN_ID+'/latest',{headers:{'X-Access-Key':CONFIG.ACCESS_KEY}});
+      if(!res.ok)throw new Error('读取失败 HTTP '+res.status);
+      const data=await res.json();
+      const record=data.record||{};
+      record.xingyuBox=appData;
+      const putRes=await fetch(CONFIG.API_BASE+'/'+CONFIG.BIN_ID,{method:'PUT',headers:{'Content-Type':'application/json','X-Access-Key':CONFIG.ACCESS_KEY},body:JSON.stringify(record)});
+      if(!putRes.ok){
+        const errText=await putRes.text().catch(function(){return '';});
+        throw new Error('保存失败 HTTP '+putRes.status+' '+errText);
+      }
+      return true;
+    }catch(e){
+      console.error('保存失败',e);
+      const msg=String(e.message||'');
+      if(msg.indexOf('100kb')>-1||msg.indexOf('over')>-1){showToast('数据超出免费存储上限，请清理旧数据或更换小图');}
+      else{showToast('保存失败，请检查网络后重试');}
+      return false;
+    }
+  });
+  return saveChain;
 }
 function addNotification(userId,type,content,relatedId){
   appData.notifications.push({id:generateId('notif'),userId:userId,type:type,content:content,relatedId:relatedId||null,isRead:false,createdAt:new Date().toISOString()});
@@ -1033,11 +1050,44 @@ function openPayModal(type,messageId){
   else{document.getElementById('payModalTitle').textContent='开通VIP月卡';document.getElementById('payModalDesc').textContent='VIP有效期内可免费查看所有问题的提问者身份';document.getElementById('payAmount').textContent=CONFIG.PRICE_VIP+'元';document.getElementById('payAmountLabel').textContent=CONFIG.VIP_DAYS+'天VIP会员';}
   document.getElementById('payModal').classList.add('active');
 }
+function compressImage(file,maxSide,quality){
+  return new Promise(function(resolve,reject){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var img=new Image();
+      img.onload=function(){
+        var w=img.width,h=img.height;
+        if(w>maxSide||h>maxSide){var r=Math.min(maxSide/w,maxSide/h);w=Math.round(w*r);h=Math.round(h*r);}
+        var canvas=document.createElement('canvas');
+        canvas.width=w;canvas.height=h;
+        var ctx=canvas.getContext('2d');
+        ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+        ctx.drawImage(img,0,0,w,h);
+        var dataUrl=canvas.toDataURL('image/jpeg',quality);
+        if(dataUrl.length>95000&&quality>0.5){dataUrl=canvas.toDataURL('image/jpeg',0.45);}
+        resolve(dataUrl);
+      };
+      img.onerror=function(){reject(new Error('图片解析失败'));};
+      img.src=e.target.result;
+    };
+    reader.onerror=function(){reject(new Error('文件读取失败'));};
+    reader.readAsDataURL(file);
+  });
+}
 function handlePayScreenshot(input){
   if(input.files&&input.files[0]){
-    const reader=new FileReader();
-    reader.onload=function(e){currentPayScreenshot=e.target.result;document.getElementById('payPreviewImg').src=currentPayScreenshot;document.getElementById('payUploadPreview').style.display='block';document.getElementById('paySubmitBtn').disabled=false;};
-    reader.readAsDataURL(input.files[0]);
+    document.getElementById('paySizeHint').textContent='正在压缩截图...';
+    compressImage(input.files[0],720,0.68).then(function(dataUrl){
+      currentPayScreenshot=dataUrl;
+      document.getElementById('payPreviewImg').src=currentPayScreenshot;
+      document.getElementById('payUploadPreview').style.display='block';
+      document.getElementById('paySubmitBtn').disabled=false;
+      var kb=Math.round(dataUrl.length/1024);
+      document.getElementById('paySizeHint').textContent='截图已压缩('+kb+'KB)，可正常提交';
+    }).catch(function(){
+      showToast('图片读取失败，请重新选择');
+      document.getElementById('paySizeHint').textContent='截图读取失败，请重试';
+    });
   }
 }
 async function submitPayOrder(){
@@ -1045,7 +1095,13 @@ async function submitPayOrder(){
   const order={id:generateId('order'),userId:currentUser.id,type:currentPayType,amount:currentPayType==='reveal'?CONFIG.PRICE_REVEAL:CONFIG.PRICE_VIP,messageId:currentPayMessageId,screenshot:currentPayScreenshot,status:'pending',createdAt:new Date().toISOString(),reviewedAt:null};
   appData.payOrders.push(order);
   addNotification(currentUser.id,'order','你的订单已提交，等待审核',order.id);
-  await saveData();
+  const ok=await saveData();
+  if(!ok){
+    appData.payOrders=appData.payOrders.filter(o=>o.id!==order.id);
+    appData.notifications=appData.notifications.filter(n=>n.relatedId!==order.id);
+    showToast('订单保存失败，请重新上传截图再试');
+    return;
+  }
   closeModal('payModal');
   showToast('订单已提交，等待管理员审核');
   if(currentPage==='box')loadBox();

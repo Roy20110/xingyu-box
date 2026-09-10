@@ -409,6 +409,14 @@ textarea.input{resize:none;line-height:1.7;}
 .qr-share-text{font-size:12px;color:var(--text-soft);text-align:center;margin:12px 0 4px;line-height:1.7;white-space:pre-line;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;word-break:break-all;}
 .qr-hint{font-size:11px;color:var(--text-mute);text-align:center;margin-bottom:14px;line-height:1.6;}
 .modal-tip{font-size:11px;color:var(--text-mute);margin-top:14px;line-height:1.7;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;}
+#appBackBtn{
+  display:none;position:fixed;left:14px;bottom:72px;z-index:9999;
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(20,20,40,0.82);border:1px solid rgba(255,255,255,0.18);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.35);
+}
+#appBackBtn svg{width:22px;height:22px;fill:#f1f1f5;}
 .modal-close{margin-top:14px;background:none;border:none;color:var(--text-mute);font-size:13px;cursor:pointer;font-family:var(--sans);width:100%;}
 
 /* ===== 追问对话链 ===== */
@@ -625,12 +633,12 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
 <!-- ===== 二维码弹窗 ===== -->
 <div class="modal-overlay" id="qrModal">
   <div class="modal qr-modal">
-    <div class="modal-title">我的永久提问箱二维码</div>
+    <div class="modal-title">我的分享海报</div>
     <div class="qr-box">
-      <canvas id="qrcodeCanvas" width="520" height="520"></canvas>
-      <img id="qrcodeImg" alt="提问箱二维码" style="display:none;width:100%;height:auto;">
+      <canvas id="qrcodeCanvas" width="560" height="800"></canvas>
+      <img id="qrcodeImg" alt="提问箱分享海报" style="display:none;width:100%;height:auto;">
     </div>
-    <div class="qr-hint">长按上方图片可直接保存，永久不变</div>
+    <div class="qr-hint">长按上方海报图片可直接保存，永久不变</div>
     <button class="btn btn-primary" style="width:100%;" onclick="saveQrImage()">保存图片到相册</button>
     <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="shareToWechat('friend')">分享到微信好友</button>
     <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="shareToWechat('timeline')">分享到微信朋友圈</button>
@@ -1130,11 +1138,74 @@ function openQrModal(){
   const img=document.getElementById('qrcodeImg');
   canvas.style.display='block';img.style.display='none';
   if(!window.QRCode){showToast('二维码组件加载中，请稍后重试');return;}
-  QRCode.toCanvas(canvas,boxUrl,{width:520,margin:2,color:{dark:'#000000',light:'#ffffff'}}).then(function(){
+  const qrTemp=document.createElement('canvas');
+  QRCode.toCanvas(qrTemp,boxUrl,{width:400,margin:1,color:{dark:'#0f1024',light:'#ffffff'}}).then(function(){
+    drawQrPoster(canvas,qrTemp,boxUrl,nickname);
     img.src=canvas.toDataURL('image/png');
     canvas.style.display='none';img.style.display='block';
   }).catch(function(){showToast('二维码生成失败');});
   document.getElementById('qrModal').classList.add('active');
+}
+function drawQrPoster(canvas,qrCanvas,boxUrl,nickname){
+  const W=560,H=800;
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  // 背景
+  ctx.fillStyle='#ffffff';
+  ctx.fillRect(0,0,W,H);
+  // 顶部渐变横幅
+  const g=ctx.createLinearGradient(0,0,W,0);
+  g.addColorStop(0,'#6b71ff');
+  g.addColorStop(0.55,'#8b5cf6');
+  g.addColorStop(1,'#ec4899');
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,W,132);
+  // 顶部白色信封小图标
+  ctx.fillStyle='#ffffff';
+  roundRect(ctx,24,28,60,48,8);ctx.fill();
+  ctx.fillStyle='#6b71ff';
+  ctx.beginPath();ctx.moveTo(24,28);ctx.lineTo(54,56);ctx.lineTo(84,28);ctx.closePath();ctx.fill();
+  // 标题
+  ctx.fillStyle='#ffffff';
+  ctx.font='bold 36px sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText('星语信箱',W/2,64);
+  ctx.font='20px sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.92)';
+  ctx.fillText('匿名提问箱 · Ask me anything',W/2,100);
+  // 二维码
+  const qs=380;
+  ctx.fillStyle='#f5f5fa';
+  roundRect(ctx,(W-qs-24)/2,158,qs+24,qs+24,20);ctx.fill();
+  ctx.drawImage(qrCanvas,(W-qs)/2,170,qs,qs);
+  // 昵称
+  ctx.fillStyle='#16172e';
+  ctx.font='bold 28px sans-serif';
+  ctx.fillText(nickname+' 的提问箱',W/2,610);
+  // 引导语
+  ctx.fillStyle='#3a3b52';
+  ctx.font='22px sans-serif';
+  ctx.fillText('微信扫码，来向我匿名提问吧',W/2,655);
+  ctx.fillStyle='#8a8ba3';
+  ctx.font='16px sans-serif';
+  ctx.fillText('可匿名提问 · 我会公开回复 · 永久有效',W/2,690);
+  // 链接
+  ctx.fillStyle='#b0b1c5';
+  ctx.font='13px sans-serif';
+  ctx.fillText(boxUrl,W/2,724);
+  // 底部
+  ctx.fillStyle='#6b71ff';
+  ctx.font='bold 15px sans-serif';
+  ctx.fillText('星语信箱 · 你的匿名提问小信箱',W/2,762);
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
 }
 function saveQrImage(){
   const img=document.getElementById('qrcodeImg');
@@ -1214,6 +1285,12 @@ function shareToQQ(type){
   }
   try{window.location.href=scheme;}catch(e){}
   showToast('正在打开QQ，请确认发送');
+}
+function goBackApp(){
+  try{
+    if(window.history.length>1){history.back();}
+    else{navigate('home');}
+  }catch(e){navigate('home');}
 }
 
 // ===== 付费系统 =====
@@ -1566,8 +1643,15 @@ async function init(){
   document.body.className='theme-'+theme;
   parseRoute();
   window.addEventListener('hashchange',parseRoute);
+  if(window.AndroidBridge){
+    var backBtn=document.getElementById('appBackBtn');
+    if(backBtn){backBtn.style.display='flex';}
+  }
 }
 init();
 </script>
+<div id="appBackBtn" onclick="goBackApp()">
+  <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+</div>
 </body>
 </html>

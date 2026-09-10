@@ -435,6 +435,133 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
   .page{max-width:640px;margin:0 auto;}
   .tabbar{max-width:640px;margin:0 auto;left:50%;transform:translateX(-50%);}
 }
+
+/* ===== 浅色 iOS 风格覆盖（照参考图） ===== */
+:root{
+  --bg:#f2f3f7;--bg-soft:#ffffff;--card:#ffffff;--card-hover:#fafafa;
+  --border:#ebedf0;--text:#111318;--text-soft:#5a6472;--text-mute:#9aa3af;
+  --primary:#007aff;--primary-soft:rgba(0,122,255,0.10);
+  --secondary:#007aff;--secondary-soft:rgba(0,122,255,0.10);
+  --accent:#007aff;--gold:#ff9500;--success:#34c759;--danger:#ff3b30;
+  --radius:14px;--radius-sm:10px;
+}
+body{background:#f2f3f7;color:#111318;}
+body::before{display:none;}
+.card{background:#fff;border:1px solid #eef0f3;border-radius:14px;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.card:hover{background:#fff;}
+.btn-primary{background:#007aff;color:#fff;box-shadow:none;border-radius:10px;}
+.btn-primary:disabled{opacity:.5;}
+.btn-ghost{background:#fff;color:#111318;border:1px solid #e3e6eb;}
+.btn-gold{background:#ff9500;color:#fff;}
+.input{background:#fff;border:1px solid #e3e6eb;color:#111318;}
+.input:focus{border-color:#007aff;box-shadow:0 0 0 3px rgba(0,122,255,0.12);}
+.avatar{background:#007aff;}
+.badge-vip{background:rgba(255,149,0,0.12);color:#e67e00;border:1px solid rgba(255,149,0,0.25);}
+.badge-admin{background:rgba(0,122,255,0.10);color:#007aff;border:1px solid rgba(0,122,255,0.2);}
+.badge-revealed{background:rgba(52,199,89,0.12);color:#2aa04a;border:1px solid rgba(52,199,89,0.25);}
+.toast{background:rgba(20,22,28,0.92);color:#fff;}
+/* 顶部导航 */
+.home-header,.inbox-header,.profile-header,.nav-top{background:#fff;border-bottom:1px solid #f0f1f4;padding-bottom:12px;}
+.home-title,.inbox-title,.page-title{color:#111318;font-family:var(--sans);font-weight:700;}
+.inbox-title{font-size:26px;font-weight:700;}
+.inbox-sub{color:#9aa3af;font-size:13px;}
+/* 分段标签（参考图：文字+蓝下划线） */
+.filter-tabs,.seg-tabs{background:#fff;display:flex;border-bottom:1px solid #f0f1f4;padding:0 8px;margin:0 -20px;padding-left:20px;padding-right:20px;}
+.filter-tab,.seg-tab{
+  flex:1;text-align:center;padding:12px 4px;font-size:15px;color:#5a6472;
+  border-bottom:2px solid transparent;background:none;border-radius:0;font-weight:500;
+}
+.filter-tab.active,.seg-tab.active{color:#007aff;border-bottom:2px solid #007aff;font-weight:600;background:none;}
+/* 收件箱卡片（参考图样式） */
+.inbox-item{border-radius:12px;border:1px solid #eef0f3;background:#fff;padding:16px 14px;margin-bottom:12px;box-shadow:none;}
+.inbox-item .inbox-from{font-size:12px;color:#9aa3af;margin-bottom:4px;}
+.inbox-item .inbox-time{font-size:12px;color:#9aa3af;}
+.inbox-item .inbox-q{font-size:16px;color:#111318;line-height:1.5;font-weight:500;margin:6px 0 4px;}
+.inbox-item .inbox-a{font-size:14px;color:#5a6472;background:#f6f7f9;border-radius:8px;padding:10px 12px;margin-top:6px;line-height:1.6;}
+.inbox-item .reply-link{color:#007aff;font-size:14px;font-weight:600;border:none;background:none;padding:0;cursor:pointer;}
+.mini-btn{background:#f2f3f7;color:#5a6472;border:1px solid #e3e6eb;border-radius:8px;padding:5px 12px;font-size:12px;}
+.mini-btn.reply,.mini-btn.pub{background:rgba(0,122,255,0.08);color:#007aff;border-color:rgba(0,122,255,0.2);}
+.mini-btn.del{background:rgba(255,59,48,0.06);color:#ff3b30;border-color:rgba(255,59,48,0.18);}
+.mini-btn.fav{background:rgba(255,149,0,0.08);color:#e67e00;border-color:rgba(255,149,0,0.2);}
+/* 底部导航（参考图：白底） */
+.tabbar{background:#fff;border-top:1px solid #eef0f3;backdrop-filter:none;-webkit-backdrop-filter:none;}
+.tabbar-item svg{fill:#9aa3af;}
+.tabbar-item.active svg{fill:#007aff;}
+.tabbar-item span{color:#9aa3af;}
+.tabbar-item.active span{color:#007aff;}
+/* 弹窗 */
+.modal{background:#fff;border:1px solid #eef0f3;}
+.modal-title{color:#111318;}
+.modal-desc{color:#5a6472;}
+.modal-tip{background:#f6f7f9;color:#5a6472;}
+.modal-close{color:#5a6472;}
+.pay-amount{background:linear-gradient(135deg,#007aff,#5856d6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.pay-qr{border-color:#007aff;box-shadow:0 8px 32px rgba(0,122,255,0.2);}
+/* 空状态 */
+.empty{color:#9aa3af;}
+.empty svg{fill:#c7ccd4;}
+/* 菜单 */
+.menu-item{background:#fff;border:1px solid #eef0f3;border-radius:12px;}
+.menu-item-title{color:#111318;}
+.menu-item-desc{color:#9aa3af;}
+.menu-item-arrow svg{fill:#c7ccd4;}
+/* 表单 */
+.form-label{color:#5a6472;}
+/* 广场feed */
+.feed-item{background:#fff;}
+.section-head h2{color:#111318;}
+.section-head a{color:#007aff;}
+/* 提问箱浅色（box页） */
+#page-box{background:#f2f3f7;}
+#page-box .btn-primary{background:#007aff;border-radius:7px;font-size:13px;padding:8px 16px;color:#fff;}
+#page-box .box-qa-section .section-head h2{color:#111318;font-size:16px;}
+#page-box .box-qa-section .section-head a{color:#007aff;}
+.box-hero{background:#fff;}
+.box-hero-name{color:#111318;}
+.box-hero-welcome{color:#5a6472;}
+.box-hero-bio{color:#9aa3af;}
+.box-stat-num{color:#111318;}
+.box-stat-label{color:#9aa3af;}
+.box-input-wrap{background:#fff;}
+.box-textarea{background:#fff;color:#111318;border:1px solid #e3e6eb;border-radius:10px;padding:12px;}
+.box-qa-item{background:#fff;border:1px solid #eef0f3;}
+.box-qa-tip{color:#9aa3af;}
+/* 提问箱卡片（box） */
+.box-qa-card{background:#fff;}
+/* 主页/登录 */
+.auth-card{background:#fff;}
+.auth-tab{color:#5a6472;}
+.auth-tab.active{color:#007aff;border-bottom:2px solid #007aff;}
+/* 悬浮返回键 */
+#appBackBtn{background:rgba(255,255,255,0.92);border:1px solid #e3e6eb;box-shadow:0 6px 20px rgba(0,0,0,0.08);}
+#appBackBtn svg{fill:#111318;}
+/* 我的信箱头部（参考图） */
+.inbox-top{display:flex;align-items:center;justify-content:space-between;padding:0 0 6px;}
+.bind-link{color:#007aff;font-size:14px;font-weight:500;cursor:pointer;width:72px;}
+.inbox-icons{display:flex;gap:10px;width:72px;justify-content:flex-end;}
+.inbox-icons .icon-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;}
+.inbox-icons svg{width:20px;height:20px;fill:#5a6472;}
+.inbox-header{background:#fff;padding:14px 20px 12px;border-bottom:1px solid #f0f1f4;}
+.inbox-title{font-size:26px;font-weight:700;color:#111318;}
+.inbox-sub{color:#9aa3af;font-size:12px;margin-top:2px;}
+.seg-tabs{background:#fff;display:flex;border-bottom:1px solid #f0f1f4;}
+.seg-tab{flex:1;text-align:center;padding:13px 4px;font-size:15px;color:#5a6472;border-bottom:2px solid transparent;font-weight:500;cursor:pointer;}
+.seg-tab.active{color:#007aff;border-bottom:2px solid #007aff;font-weight:600;}
+.inbox-list{padding:16px 16px 90px;}
+/* 参考图卡片 */
+.ib-card{background:#fff;border-radius:12px;border:1px solid #eef0f3;padding:14px 14px 12px;margin-bottom:12px;}
+.ib-from{font-size:12px;color:#9aa3af;margin-bottom:3px;}
+.ib-time{font-size:12px;color:#9aa3af;}
+.ib-q{font-size:15px;color:#111318;line-height:1.55;font-weight:500;margin:6px 0 8px;word-break:break-word;}
+.ib-a{font-size:13px;color:#5a6472;background:#f6f7f9;border-radius:8px;padding:9px 12px;margin-bottom:8px;line-height:1.6;word-break:break-word;}
+.ib-foot{display:flex;align-items:center;justify-content:space-between;}
+.ib-reply-btn{color:#007aff;font-size:14px;font-weight:600;border:none;background:none;padding:2px 0;cursor:pointer;}
+.ib-actions{display:flex;gap:8px;}
+.ib-empty{text-align:center;padding:70px 20px 30px;}
+.ib-empty svg{width:96px;height:96px;margin-bottom:16px;opacity:0.9;}
+.ib-empty-t{font-size:15px;color:#111318;font-weight:500;margin-bottom:6px;}
+.ib-empty-d{font-size:13px;color:#9aa3af;margin-bottom:20px;line-height:1.6;}
+.ib-empty .btn{display:inline-flex;}
 </style>
 </head>
 <body>
@@ -481,17 +608,23 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
   <div class="feed" id="feedList"></div>
 </div>
 
-<!-- ===== 收件箱 ===== -->
+<!-- ===== 我的信箱 ===== -->
 <div class="page" id="page-inbox">
   <div class="inbox-header">
-    <div class="inbox-title">我的信箱</div>
+    <div class="inbox-top">
+      <div class="bind-link" onclick="bindQuestion()">绑定提问</div>
+      <div class="inbox-title">我的信箱</div>
+      <div class="inbox-icons">
+        <div class="icon-btn" onclick="getShareLink()"><svg viewBox="0 0 24 24" style="fill:#5a6472;"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></div>
+      </div>
+    </div>
     <div class="inbox-sub" id="inboxSub">收到的匿名提问</div>
   </div>
-  <div class="filter-tabs" id="inboxFilters">
-    <div class="filter-tab active" onclick="filterInbox('all')">全部</div>
-    <div class="filter-tab" onclick="filterInbox('unread')">未回复</div>
-    <div class="filter-tab" onclick="filterInbox('replied')">已回复</div>
-    <div class="filter-tab" onclick="filterInbox('favorite')">已收藏</div>
+  <div class="seg-tabs" id="inboxFilters">
+    <div class="seg-tab active" data-filter="unanswered" onclick="filterInbox('unanswered')">未回答</div>
+    <div class="seg-tab" data-filter="answered" onclick="filterInbox('answered')">已回答</div>
+    <div class="seg-tab" data-filter="pending" onclick="filterInbox('pending')">待回应</div>
+    <div class="seg-tab" data-filter="responded" onclick="filterInbox('responded')">有回应</div>
   </div>
   <div class="inbox-list" id="inboxList"></div>
 </div>
@@ -616,16 +749,21 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
 
 <!-- ===== 底部导航 ===== -->
 <div class="tabbar" id="tabbar" style="display:none;">
-  <div class="tabbar-item active" onclick="navigate('home')" id="nav-home">
-    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-    <span>广场</span>
-  </div>
   <div class="tabbar-item" onclick="navigate('inbox')" id="nav-inbox">
-    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
     <span>信箱</span>
   </div>
-  <div class="tabbar-item" onclick="navigate('profile')" id="nav-profile">
+  <div class="tabbar-item" onclick="navigate('notifications')" id="nav-notifications">
+    <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+    <span>消息</span>
+    <div class="tabbar-dot" id="notifDot" style="display:none;"></div>
+  </div>
+  <div class="tabbar-item" onclick="navigate('home')" id="nav-home">
     <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    <span>友联</span>
+  </div>
+  <div class="tabbar-item" onclick="navigate('profile')" id="nav-profile">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
     <span>我的</span>
   </div>
 </div>
@@ -698,6 +836,12 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
       <button class="btn btn-ghost" style="width:100%;" onclick="document.getElementById('avatarInput').click()">选择图片</button>
       <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
     </div>
+    <div class="form-group" style="text-align:left;">
+      <label class="form-label">提问箱壁纸</label>
+      <button class="btn btn-ghost" style="width:100%;" onclick="document.getElementById('bgInput').click()">选择壁纸图片</button>
+      <input type="file" id="bgInput" accept="image/*" style="display:none" onchange="uploadBackground(this)">
+      <div style="font-size:11px;color:#9aa3af;margin-top:6px;">选择后，别人打开你的提问箱会看到这张壁纸</div>
+    </div>
     <button class="btn btn-primary" style="width:100%;" onclick="saveProfile()">保存</button>
     <button class="modal-close" onclick="closeModal('profileModal')">取消</button>
   </div>
@@ -761,7 +905,7 @@ let currentReplyVisibility = 'public';
 let currentPayType = 'reveal';
 let currentPayMessageId = null;
 let currentPayScreenshot = null;
-let currentInboxFilter = 'all';
+let currentInboxFilter = 'unanswered';
 let currentAdminTab = 'users';
 let likedMessages = JSON.parse(localStorage.getItem('xy_liked') || '[]');
 
@@ -823,10 +967,10 @@ function navigate(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   currentPage=page;
-  const showTabbar=['home','inbox','profile'].includes(page);
+  const showTabbar=['home','inbox','profile','notifications'].includes(page);
   document.getElementById('tabbar').style.display=showTabbar?'flex':'none';
   document.querySelectorAll('.tabbar-item').forEach(n=>n.classList.remove('active'));
-  const navMap={home:'nav-home',inbox:'nav-inbox',profile:'nav-profile'};
+  const navMap={home:'nav-home',inbox:'nav-inbox',profile:'nav-profile',notifications:'nav-notifications'};
   if(navMap[page])document.getElementById(navMap[page]).classList.add('active');
   if(page==='home')loadFeed();
   if(page==='inbox')loadInbox();
@@ -920,52 +1064,105 @@ async function toggleLike(msgId){
 // ===== 收件箱 =====
 function loadInbox(){
   if(!currentUser){navigate('auth');return;}
-  const userMsgs=appData.messages.filter(m=>m.userId===currentUser.id&&!m.parentId);
-  document.getElementById('inboxSub').textContent='共收到 '+userMsgs.length+' 条提问';
-  renderInboxList(userMsgs);
+  const tab=currentInboxFilter||'unanswered';
+  const inMsgs=appData.messages.filter(m=>m.userId===currentUser.id&&!m.parentId);
+  const outMsgs=appData.messages.filter(m=>m.askerUserId===currentUser.id&&!m.parentId);
+  let count=0;
+  if(tab==='unanswered'){count=inMsgs.filter(m=>!m.reply).length;}
+  else if(tab==='answered'){count=inMsgs.filter(m=>m.reply).length;}
+  else if(tab==='pending'){count=outMsgs.filter(m=>!m.reply).length;}
+  else if(tab==='responded'){count=outMsgs.filter(m=>m.reply).length;}
+  document.getElementById('inboxSub').textContent=tab==='pending'||tab==='responded'?'我提出的问题 '+count+' 条':'收到的提问 '+count+' 条';
+  renderInboxList(tab);
 }
 function filterInbox(filter){
   currentInboxFilter=filter;
-  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
-  event.target.classList.add('active');
+  document.querySelectorAll('#inboxFilters .seg-tab').forEach(t=>t.classList.toggle('active',t.getAttribute('data-filter')===filter));
   loadInbox();
 }
-function renderInboxList(messages){
-  let filtered=messages;
-  if(currentInboxFilter==='unread')filtered=messages.filter(m=>!m.reply);
-  else if(currentInboxFilter==='replied')filtered=messages.filter(m=>m.reply);
-  else if(currentInboxFilter==='favorite')filtered=messages.filter(m=>m.isFavorite);
+function bindQuestion(){
+  if(!currentUser){navigate('auth');return;}
+  filterInbox('pending');
+  showToast('你去别人提问箱提问会自动绑定，回复在这里看');
+}
+function renderInboxList(tab){
   const container=document.getElementById('inboxList');
-  if(filtered.length===0){container.innerHTML='<div class="empty"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><p>暂无提问</p></div>';return;}
-  container.innerHTML=filtered.slice().reverse().map(m=>{
+  const inMsgs=appData.messages.filter(m=>m.userId===currentUser.id&&!m.parentId);
+  const outMsgs=appData.messages.filter(m=>m.askerUserId===currentUser.id&&!m.parentId);
+  let list=[];
+  let isOut=false;
+  if(tab==='unanswered'){list=inMsgs.filter(m=>!m.reply);}
+  else if(tab==='answered'){list=inMsgs.filter(m=>m.reply);}
+  else if(tab==='pending'){list=outMsgs.filter(m=>!m.reply);isOut=true;}
+  else if(tab==='responded'){list=outMsgs.filter(m=>m.reply);isOut=true;}
+  if(list.length===0){
+    let title,desc,btn;
+    if(isOut){
+      title='这里显示你向朋友提出的问题';
+      desc='去别人的提问箱提问会自动绑定到这里\n回复了就能在"有回应"里看到，不用一个个找';
+      btn='<button class="btn btn-primary" onclick="navigate(\'home\')">去广场看看</button>';
+    }else if(tab==='unanswered'){
+      title='还没有收到新提问';
+      desc='要下拉刷新才会显示新问题\n回答后，大家才能看见哦';
+      btn='<button class="btn btn-primary" onclick="viewMyBox()">分享我的提问箱</button>';
+    }else{
+      title='这里空空如也';
+      desc='还没有回答过提问\n去"未回答"看看有没有新问题吧';
+      btn='';
+    }
+    container.innerHTML='<div class="ib-empty">'+
+      '<svg viewBox="0 0 120 120"><g fill="none" stroke="#c7ccd4" stroke-width="3"><rect x="22" y="52" width="76" height="40" rx="8"/><path d="M22 56 L60 84 L98 56"/><path d="M70 22 L84 36" stroke-linecap="round"/><circle cx="88" cy="20" r="4" fill="#c7ccd4" stroke="none"/><path d="M30 20 L34 28 M34 20 L30 28" stroke-linecap="round"/></g><rect x="38" y="66" width="44" height="4" rx="2" fill="#e8eaf0" stroke="none"/><rect x="46" y="76" width="28" height="4" rx="2" fill="#e8eaf0" stroke="none"/></svg>'+
+      '<div class="ib-empty-t">'+title+'</div>'+
+      '<div class="ib-empty-d">'+desc+'</div>'+btn+'</div>';
+    return;
+  }
+  container.innerHTML=list.slice().reverse().map(m=>{
+    if(isOut){
+      const owner=appData.users.find(u=>u.id===m.userId);
+      return '<div class="ib-card">'+
+        '<div class="ib-from">提问给：'+(owner?escapeHtml(owner.nickname):'未知')+'</div>'+
+        '<div class="ib-time">'+formatTime(m.createdAt)+'</div>'+
+        '<div class="ib-q">'+escapeHtml(m.content)+'</div>'+
+        (m.reply?'<div class="ib-a">'+escapeHtml(m.reply)+'</div>':'<div class="ib-a" style="color:#9aa3af;">等待对方回复...</div>')+
+        '<div class="ib-foot">'+
+          '<span class="ib-time">'+(m.reply?'对方已回复':'对方未回复')+'</span>'+
+          (m.reply?'':'<button class="ib-reply-btn" onclick="deleteMyQuestion(\''+m.id+'\')">删除</button>')+
+        '</div></div>';
+    }
     const replies=appData.messages.filter(r=>r.parentId===m.id);
     let askerHtml='';
     if(m.askerUserId){
       if(m.isRevealed||checkVip(currentUser)){
         const asker=appData.users.find(u=>u.id===m.askerUserId);
-        askerHtml='<div class="inbox-asker"><span class="badge badge-revealed">提问者: '+escapeHtml(asker?asker.nickname+' ('+asker.account+')':(m.askerNickname||'未知'))+'</span></div>';
+        askerHtml='来自：'+(asker?escapeHtml(asker.nickname)+' ('+escapeHtml(asker.account)+')':(m.askerNickname||'匿名'));
       }else{
-        askerHtml='<div class="inbox-asker"><button class="reveal-btn" onclick="revealIdentity(\''+m.id+'\')">查看提问者身份 '+CONFIG.PRICE_REVEAL+'元</button></div>';
+        askerHtml='来自：匿名提问';
       }
     }else{
-      askerHtml='<div class="inbox-asker"><span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-mute);">未登录匿名提问</span></div>';
+      askerHtml='来自：匿名';
     }
-    return `
-    <div class="card inbox-item ${!m.reply?'unread':''}">
-      ${askerHtml}
-      <div class="inbox-q">${escapeHtml(m.content)}</div>
-      ${m.reply?'<div class="inbox-a">'+escapeHtml(m.reply)+'</div>':''}
-      ${replies.length>0?'<div style="margin-bottom:10px;font-size:11px;color:var(--text-mute);">'+replies.length+' 条追问</div>':''}
-      <div class="inbox-meta">
-        <span class="inbox-time">${formatTime(m.createdAt)}</span>
-        <div class="inbox-btns">
-          <button class="mini-btn fav" onclick="toggleFavorite('${m.id}')">${m.isFavorite?'已收藏':'收藏'}</button>
-          <button class="mini-btn ${m.reply?'pub':'reply'}" onclick="openReply('${m.id}')">${m.reply?'编辑':'回复'}</button>
-          <button class="mini-btn del" onclick="deleteMessage('${m.id}')">删除</button>
-        </div>
-      </div>
-    </div>`;
+    return '<div class="ib-card">'+
+      '<div class="ib-from">'+askerHtml+'</div>'+
+      '<div class="ib-time">'+formatTime(m.createdAt)+'</div>'+
+      '<div class="ib-q">'+escapeHtml(m.content)+'</div>'+
+      (m.reply?'<div class="ib-a">'+escapeHtml(m.reply)+'</div>':'')+
+      (replies.length>0?'<div style="font-size:11px;color:#9aa3af;margin-bottom:6px;">'+replies.length+' 条追问</div>':'')+
+      '<div class="ib-foot">'+
+        '<button class="ib-reply-btn" onclick="openReply(\''+m.id+'\')">'+(m.reply?'我的回答':'回复')+'</button>'+
+        '<div class="ib-actions">'+
+          (m.askerUserId?'<button class="mini-btn" style="background:rgba(0,122,255,0.08);color:#007aff;border-color:rgba(0,122,255,0.2);" onclick="revealIdentity(\''+m.id+'\')">'+(m.isRevealed||checkVip(currentUser)?'已解锁':'查看身份')+'</button>':'')+
+          '<button class="mini-btn" style="background:rgba(255,149,0,0.08);color:#e67e00;border-color:rgba(255,149,0,0.2);" onclick="toggleFavorite(\''+m.id+'\')">'+(m.isFavorite?'已收藏':'收藏')+'</button>'+
+          '<button class="mini-btn" style="background:rgba(255,59,48,0.06);color:#ff3b30;border-color:rgba(255,59,48,0.18);" onclick="deleteMessage(\''+m.id+'\')">删除</button>'+
+        '</div>'+
+      '</div></div>';
   }).join('');
+}
+async function deleteMyQuestion(msgId){
+  if(!confirm('确定删除这条提问吗？'))return;
+  appData.messages=appData.messages.filter(m=>m.id!==msgId&&m.parentId!==msgId);
+  await saveData();
+  showToast('已删除');
+  loadInbox();
 }
 function openReply(msgId){
   currentReplyMsgId=msgId;
@@ -1021,6 +1218,8 @@ function loadBox(){
   document.getElementById('page-box').classList.add('active');
   currentPage='box';
   document.getElementById('tabbar').style.display='none';
+  const hero=document.getElementById('boxHero');
+  if(hero){hero.style.background=user.background?'linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)),url("'+user.background+'") center/cover no-repeat':'#fff';}
   const avatar=document.getElementById('boxAvatar');
   if(avatar){avatar.innerHTML=user.avatar?'<img src="'+user.avatar+'">':user.nickname.charAt(0).toUpperCase();}
   const nameWrap=document.getElementById('boxName');
@@ -1441,6 +1640,14 @@ function uploadAvatar(input){
   if(file.size>2*1024*1024){showToast('图片不能超过2MB');return;}
   const reader=new FileReader();
   reader.onload=async function(e){currentUser.avatar=e.target.result;await saveData();localStorage.setItem('xy_current_user',JSON.stringify(currentUser));showToast('头像已更新');loadProfile();};
+  reader.readAsDataURL(file);
+}
+function uploadBackground(input){
+  const file=input.files[0];
+  if(!file)return;
+  if(file.size>2*1024*1024){showToast('图片不能超过2MB');return;}
+  const reader=new FileReader();
+  reader.onload=async function(e){currentUser.background=e.target.result;await saveData();localStorage.setItem('xy_current_user',JSON.stringify(currentUser));showToast('壁纸已更新');closeModal('profileModal');loadBox();};
   reader.readAsDataURL(file);
 }
 function openThemeModal(){document.getElementById('themeModal').classList.add('active');}

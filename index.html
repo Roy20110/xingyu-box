@@ -344,6 +344,8 @@ textarea.input{resize:none;line-height:1.7;}
 .order-status.rejected{background:rgba(239,68,68,0.15);color:#f87171;}
 .order-info{font-size:12px;color:var(--text-soft);line-height:1.8;}
 .order-amount{font-size:15px;font-weight:800;color:var(--primary);}
+.order-no{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.order-no .copy-no-btn{font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--primary);cursor:pointer;line-height:1.4;}
 .order-shot{width:60px;height:60px;border-radius:8px;overflow:hidden;margin-top:10px;cursor:pointer;border:1px solid var(--border);}
 .order-shot img{width:100%;height:100%;object-fit:cover;}
 .order-actions{display:flex;gap:8px;margin-top:12px;}
@@ -586,6 +588,7 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
     <div class="pay-amount-label" id="payAmountLabel">单次解锁</div>
     <div class="pay-qr"><img id="payQrImg" src="" alt="赞赏码"></div>
     <div class="upload-preview" id="payUploadPreview"><img id="payPreviewImg" src=""></div>
+    <input class="input" id="payOrderNo" placeholder="填写微信/支付宝转账单号(选填,方便管理员核对)" style="width:100%;margin-bottom:10px;box-sizing:border-box;">
     <button class="btn btn-ghost" style="width:100%;margin-bottom:12px;" onclick="document.getElementById('payScreenshotInput').click()">上传转账截图</button>
     <input type="file" id="payScreenshotInput" accept="image/*" style="display:none" onchange="handlePayScreenshot(this)">
     <div class="modal-tip" id="paySizeHint" style="margin-top:8px;">截图会自动压缩后再提交</div>
@@ -1046,6 +1049,7 @@ function openPayModal(type,messageId){
   document.getElementById('payUploadPreview').style.display='none';
   document.getElementById('paySubmitBtn').disabled=true;
   document.getElementById('payScreenshotInput').value='';
+  document.getElementById('payOrderNo').value='';
   if(type==='reveal'){document.getElementById('payModalTitle').textContent='解锁提问者身份';document.getElementById('payModalDesc').textContent='支付后可查看该问题的提问者注册账号和昵称';document.getElementById('payAmount').textContent=CONFIG.PRICE_REVEAL+'元';document.getElementById('payAmountLabel').textContent='单次解锁该问题';}
   else{document.getElementById('payModalTitle').textContent='开通VIP月卡';document.getElementById('payModalDesc').textContent='VIP有效期内可免费查看所有问题的提问者身份';document.getElementById('payAmount').textContent=CONFIG.PRICE_VIP+'元';document.getElementById('payAmountLabel').textContent=CONFIG.VIP_DAYS+'天VIP会员';}
   document.getElementById('payModal').classList.add('active');
@@ -1092,7 +1096,7 @@ function handlePayScreenshot(input){
 }
 async function submitPayOrder(){
   if(!currentPayScreenshot){showToast('请先上传转账截图');return;}
-  const order={id:generateId('order'),userId:currentUser.id,type:currentPayType,amount:currentPayType==='reveal'?CONFIG.PRICE_REVEAL:CONFIG.PRICE_VIP,messageId:currentPayMessageId,screenshot:currentPayScreenshot,status:'pending',createdAt:new Date().toISOString(),reviewedAt:null};
+  const order={id:generateId('order'),userId:currentUser.id,type:currentPayType,amount:currentPayType==='reveal'?CONFIG.PRICE_REVEAL:CONFIG.PRICE_VIP,messageId:currentPayMessageId,orderNo:(document.getElementById('payOrderNo').value||'').trim(),screenshot:currentPayScreenshot,status:'pending',createdAt:new Date().toISOString(),reviewedAt:null};
   appData.payOrders.push(order);
   addNotification(currentUser.id,'order','你的订单已提交，等待审核',order.id);
   const ok=await saveData();
@@ -1281,6 +1285,7 @@ function loadAdminOrders(){
         <div>用户: ${user?escapeHtml(user.nickname)+' ('+escapeHtml(user.account)+')':'未知用户'}</div>
         ${msg?'<div>问题: '+escapeHtml(msg.content.substring(0,40))+(msg.content.length>40?'...':'')+'</div>':''}
         <div>金额: <span class="order-amount">${order.amount}元</span></div>
+        ${order.orderNo?'<div class="order-no">单号: '+escapeHtml(order.orderNo)+'<button class="copy-no-btn" onclick="copyOrderNo(this)">复制</button></div>':''}
         <div>时间: ${formatTime(order.createdAt)}</div>
       </div>
       ${order.screenshot?'<div class="order-shot" onclick="viewImage(\''+order.screenshot+'\')"><img src="'+order.screenshot+'"></div>':''}
@@ -1294,6 +1299,11 @@ function loadAdminOrders(){
   }).join('');
 }
 function viewImage(src){document.getElementById('imageModalImg').src=src;document.getElementById('imageModal').classList.add('active');}
+function copyOrderNo(btn){
+  const text=btn.parentElement.textContent.replace('复制','').replace('单号:','').trim();
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){showToast('单号已复制');});}
+  else{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();showToast('单号已复制');}
+}
 async function approveOrder(orderId){
   const order=appData.payOrders.find(o=>o.id===orderId);
   if(!order)return;

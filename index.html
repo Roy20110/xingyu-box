@@ -588,13 +588,13 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
     <div class="pay-amount-label" id="payAmountLabel">单次解锁</div>
     <div class="pay-qr"><img id="payQrImg" src="" alt="赞赏码"></div>
     <div class="upload-preview" id="payUploadPreview"><img id="payPreviewImg" src=""></div>
-    <input class="input" id="payOrderNo" placeholder="填写微信/支付宝转账单号(选填,方便管理员核对)" style="width:100%;margin-bottom:10px;box-sizing:border-box;">
+    <input class="input" id="payOrderNo" placeholder="填写微信转账单号(和截图二选一即可)" style="width:100%;margin-bottom:10px;box-sizing:border-box;" oninput="updatePaySubmitState()">
     <button class="btn btn-ghost" style="width:100%;margin-bottom:12px;" onclick="document.getElementById('payScreenshotInput').click()">上传转账截图</button>
     <input type="file" id="payScreenshotInput" accept="image/*" style="display:none" onchange="handlePayScreenshot(this)">
     <div class="modal-tip" id="paySizeHint" style="margin-top:8px;">截图会自动压缩后再提交</div>
     <button class="btn btn-primary" id="paySubmitBtn" style="width:100%;" onclick="submitPayOrder()" disabled>提交订单等待审核</button>
     <button class="modal-close" onclick="closeModal('payModal')">取消</button>
-    <div class="modal-tip">请长按识别赞赏码支付对应金额，然后上传转账截图，管理员审核通过后自动解锁。</div>
+    <div class="modal-tip">请长按识别赞赏码支付对应金额，然后<strong>上传转账截图 或 填写转账单号</strong>（二选一即可），管理员审核通过后自动解锁。</div>
   </div>
 </div>
 
@@ -1050,9 +1050,16 @@ function openPayModal(type,messageId){
   document.getElementById('paySubmitBtn').disabled=true;
   document.getElementById('payScreenshotInput').value='';
   document.getElementById('payOrderNo').value='';
+  document.getElementById('paySizeHint').textContent='截图会自动压缩后再提交';
+  updatePaySubmitState();
   if(type==='reveal'){document.getElementById('payModalTitle').textContent='解锁提问者身份';document.getElementById('payModalDesc').textContent='支付后可查看该问题的提问者注册账号和昵称';document.getElementById('payAmount').textContent=CONFIG.PRICE_REVEAL+'元';document.getElementById('payAmountLabel').textContent='单次解锁该问题';}
   else{document.getElementById('payModalTitle').textContent='开通VIP月卡';document.getElementById('payModalDesc').textContent='VIP有效期内可免费查看所有问题的提问者身份';document.getElementById('payAmount').textContent=CONFIG.PRICE_VIP+'元';document.getElementById('payAmountLabel').textContent=CONFIG.VIP_DAYS+'天VIP会员';}
   document.getElementById('payModal').classList.add('active');
+}
+function updatePaySubmitState(){
+  const hasShot=!!currentPayScreenshot;
+  const hasNo=!!(document.getElementById('payOrderNo').value||'').trim();
+  document.getElementById('paySubmitBtn').disabled=!(hasShot||hasNo);
 }
 function compressImage(file,maxSide,quality){
   return new Promise(function(resolve,reject){
@@ -1085,9 +1092,9 @@ function handlePayScreenshot(input){
       currentPayScreenshot=dataUrl;
       document.getElementById('payPreviewImg').src=currentPayScreenshot;
       document.getElementById('payUploadPreview').style.display='block';
-      document.getElementById('paySubmitBtn').disabled=false;
       var kb=Math.round(dataUrl.length/1024);
       document.getElementById('paySizeHint').textContent='截图已压缩('+kb+'KB)，可正常提交';
+      updatePaySubmitState();
     }).catch(function(){
       showToast('图片读取失败，请重新选择');
       document.getElementById('paySizeHint').textContent='截图读取失败，请重试';
@@ -1095,8 +1102,9 @@ function handlePayScreenshot(input){
   }
 }
 async function submitPayOrder(){
-  if(!currentPayScreenshot){showToast('请先上传转账截图');return;}
-  const order={id:generateId('order'),userId:currentUser.id,type:currentPayType,amount:currentPayType==='reveal'?CONFIG.PRICE_REVEAL:CONFIG.PRICE_VIP,messageId:currentPayMessageId,orderNo:(document.getElementById('payOrderNo').value||'').trim(),screenshot:currentPayScreenshot,status:'pending',createdAt:new Date().toISOString(),reviewedAt:null};
+  const orderNo=(document.getElementById('payOrderNo').value||'').trim();
+  if(!currentPayScreenshot&&!orderNo){showToast('请上传转账截图 或 填写转账单号');return;}
+  const order={id:generateId('order'),userId:currentUser.id,type:currentPayType,amount:currentPayType==='reveal'?CONFIG.PRICE_REVEAL:CONFIG.PRICE_VIP,messageId:currentPayMessageId,orderNo:orderNo,screenshot:currentPayScreenshot||'',status:'pending',createdAt:new Date().toISOString(),reviewedAt:null};
   appData.payOrders.push(order);
   addNotification(currentUser.id,'order','你的订单已提交，等待审核',order.id);
   const ok=await saveData();

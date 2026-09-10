@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>星语信箱 APP 下载</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC",sans-serif;
+  background:linear-gradient(160deg,#0d0d1a 0%,#141428 55%,#1a1a30 100%);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;color:#f1f1f5;
+}
+.card{
+  width:100%;max-width:380px;background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:36px 28px;text-align:center;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+}
+.icon{
+  width:84px;height:84px;border-radius:22px;margin:0 auto 20px;
+  background:linear-gradient(135deg,#6b71ff,#ec4899);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 12px 40px rgba(107,113,255,0.35);
+}
+.icon svg{width:44px;height:44px;fill:#fff;}
+h1{font-size:24px;font-weight:700;margin-bottom:8px;letter-spacing:0.5px;}
+.sub{font-size:13px;color:#a1a1aa;margin-bottom:28px;line-height:1.7;}
+.btn{
+  display:block;width:100%;padding:16px 20px;border-radius:14px;border:none;cursor:pointer;
+  font-size:16px;font-weight:600;text-decoration:none;color:#fff;margin-bottom:12px;
+  transition:transform .15s ease,opacity .15s ease;
+}
+.btn:active{transform:scale(0.97);opacity:0.9;}
+.btn-primary{background:linear-gradient(135deg,#6b71ff,#8b5cf6);box-shadow:0 8px 28px rgba(107,113,255,0.35);}
+.btn-ghost{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);color:#e4e4e7;}
+.btn-ghost2{background:rgba(236,72,153,0.15);border:1px solid rgba(236,72,153,0.35);color:#f9a8d4;}
+.note{font-size:11px;color:#71717a;line-height:1.8;margin-top:20px;text-align:left;}
+.note b{color:#a1a1aa;font-weight:600;}
+.tag{display:inline-block;font-size:11px;color:#6b71ff;background:rgba(107,113,255,0.12);border-radius:6px;padding:2px 8px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V7h2v3z"/></svg>
+  </div>
+  <div class="tag">v1.0 安卓版</div>
+  <h1>星语信箱</h1>
+  <div class="sub">匿名提问箱 · 专属二维码 · 一键分享微信QQ<br>保存图片直入相册，永久二维码扫码进你的提问箱</div>
+  <a class="btn btn-primary" href="星语信箱-v1.0.apk" download="星语信箱-v1.0.apk">下载安卓 APP（APK）</a>
+  <a class="btn btn-ghost" href="./">打开网页版</a>
+  <div class="note">
+    <b>安装提示：</b>安卓手机下载后点击安装，若提示"未知来源应用"，需在设置中允许安装即可。<br>
+    <b>APP 功能：</b>内置一键分享到微信/QQ/朋友圈（系统分享面板），保存二维码直达相册，无需任何权限申请。<br>
+    <b>网页版限制：</b>普通浏览器无法一键调起微信分享与保存相册，属微信与手机系统限制，APP 版已全部解决。
+  </div>
+</div>
+</body>
+</html>

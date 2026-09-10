@@ -631,8 +631,9 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
       <img id="qrcodeImg" alt="提问箱二维码" style="display:none;width:260px;height:260px;">
     </div>
     <div class="qr-share-text" id="qrText"></div>
-    <div class="qr-hint">此二维码永久不变，长按图片保存，微信扫码直接进入提问箱</div>
+    <div class="qr-hint">二维码永久不变。保存方式：点下面按钮，或用手指长按二维码图片选择"保存图片"</div>
     <button class="btn btn-primary" style="width:100%;" onclick="saveQrImage()">保存二维码图片</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="copyQrText()">复制提问箱链接</button>
     <button class="modal-close" onclick="closeModal('qrModal')">关闭</button>
   </div>
 </div>
@@ -1137,11 +1138,32 @@ function openQrModal(){
 }
 function saveQrImage(){
   const img=document.getElementById('qrcodeImg');
-  if(!img.src){showToast('二维码还没生成好');return;}
-  const a=document.createElement('a');
-  a.href=img.src;a.download='我的提问箱二维码.png';
-  document.body.appendChild(a);a.click();a.remove();
-  showToast('图片已保存，长按也可以保存');
+  if(!img.src||img.src.length<100){showToast('二维码还没生成好');return;}
+  try{
+    const dataUrl=img.src;
+    const parts=dataUrl.split(',');
+    const mime=parts[0].match(/:(.*?);/)[1];
+    const bstr=atob(parts[1]);
+    const n=bstr.length;
+    const u8arr=new Uint8Array(n);
+    for(let i=0;i<n;i++){u8arr[i]=bstr.charCodeAt(i);}
+    const file=new File([u8arr],'我的提问箱二维码.png',{type:mime});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:'我的提问箱二维码'}).then(function(){showToast('已分享');}).catch(function(){});
+      return;
+    }
+    const a=document.createElement('a');
+    a.href=dataUrl;a.download='我的提问箱二维码.png';
+    document.body.appendChild(a);a.click();a.remove();
+    showToast('已保存，若没反应请长按二维码图片保存');
+  }catch(e){
+    showToast('请长按上方二维码图片保存');
+  }
+}
+function copyQrText(){
+  const txt=document.getElementById('qrText').textContent;
+  if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){showToast('链接已复制');}).catch(function(){fallbackCopy(txt);});}
+  else{fallbackCopy(txt);}
 }
 
 // ===== 付费系统 =====

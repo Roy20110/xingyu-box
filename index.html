@@ -52,6 +52,10 @@ body::before{
 }
 .page{display:none;width:100%;min-height:100vh;position:relative;z-index:2;padding-bottom:80px;max-width:480px;margin:0 auto;}
 .page.active{display:block;animation:fadeIn .4s ease;}
+#page-box{background:#464E5C;}
+#page-box .btn-primary{background:#6B71FF;border-radius:7px;font-size:13px;padding:8px 16px;}
+#page-box .box-qa-section .section-head h2{color:#fff;font-size:16px;}
+#page-box .box-qa-section .section-head a{color:#6B71FF;}
 .page.auth-page{display:none;padding:24px;padding-bottom:24px;align-items:center;justify-content:center;}
 .page.auth-page.active{display:flex;}
 .btn,.auth-tab,.icon-btn,.filter-tab,.mini-btn,.menu-item,.feed-item,.follow-btn,.reveal-btn,.order-action-btn{pointer-events:auto;cursor:pointer;}
@@ -232,45 +236,56 @@ textarea.input{resize:none;line-height:1.7;}
 
 /* ===== 提问箱页面 ===== */
 .box-hero{
-  padding:60px 20px 32px;text-align:center;
-  background:linear-gradient(180deg,rgba(236,72,153,0.08),transparent);
+  padding:60px 20px 28px;text-align:center;
+  background:transparent;
 }
-.box-hero-avatar{width:80px;height:80px;margin:0 auto 14px;font-size:30px;}
-.box-hero-name{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:8px;}
-.box-hero-bio{font-size:13px;color:var(--text-soft);max-width:300px;margin:0 auto 10px;line-height:1.7;}
-.box-hero-welcome{font-size:12px;color:var(--text-mute);max-width:300px;margin:0 auto 18px;line-height:1.7;padding:8px 14px;background:rgba(255,255,255,0.04);border-radius:10px;}
-.box-hero-stats{display:flex;justify-content:center;gap:24px;}
+.box-hero-top{display:flex;align-items:center;justify-content:space-between;max-width:340px;margin:0 auto 18px;}
+.box-hero-user{display:flex;align-items:center;gap:8px;}
+.box-heart{width:26px;height:26px;fill:#6B71FF;flex-shrink:0;}
+.box-hero-name{font-size:18px;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px;min-width:0;}
+.box-name-avatar{width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;display:inline-flex;}
+.box-name-avatar img{width:100%;height:100%;object-fit:cover;}
+.box-ask-btn{
+  padding:8px 18px;background:#6B71FF;color:#fff;font-size:13px;
+  border:none;border-radius:7px;cursor:pointer;font-family:var(--sans);
+}
+.box-hero-welcome{font-size:15px;color:#fff;max-width:330px;margin:0 auto 8px;line-height:1.7;}
+.box-hero-bio{font-size:13px;color:#B0BAC3;max-width:330px;margin:0 auto 18px;line-height:1.7;}
+.box-hero-stats{display:flex;justify-content:center;gap:32px;}
 .box-stat{text-align:center;}
-.box-stat-num{font-size:18px;font-weight:700;color:var(--primary);}
-.box-stat-label{font-size:11px;color:var(--text-mute);margin-top:2px;}
+.box-stat-num{font-size:18px;font-weight:700;color:#fff;}
+.box-stat-label{font-size:11px;color:#B0BAC3;margin-top:2px;}
 .box-input-section{padding:0 20px 24px;}
-.box-input-wrap{padding:16px;}
+.box-input-wrap{padding:16px;background:#37404F;border-radius:15px;border:1px solid rgba(255,255,255,0.06);}
 .box-textarea{
   width:100%;min-height:100px;padding:0;border:none;background:transparent;
-  color:var(--text);font-size:14px;line-height:1.7;outline:none;resize:none;
+  color:#fff;font-size:15px;line-height:1.7;outline:none;resize:none;
   font-family:var(--sans);
 }
-.box-textarea::placeholder{color:var(--text-mute);}
+.box-textarea::placeholder{color:#8b95a6;}
 .box-input-foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
-.char-count{font-size:11px;color:var(--text-mute);}
+.char-count{font-size:11px;color:#8b95a6;}
 .box-qa-section{padding:0 20px;}
-.box-qa-item{padding:16px;margin-bottom:12px;}
-.box-qa-tip{font-size:11px;color:var(--text-mute);text-align:center;padding:18px 10px 30px;line-height:1.7;}
-.box-qa-q{font-size:14px;line-height:1.7;margin-bottom:10px;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;}
+.box-qa-item{padding:16px;margin-bottom:14px;background:#37404F;border-radius:15px;border:none;}
+.box-qa-tip{font-size:12px;color:#8b95a6;text-align:center;padding:18px 10px 30px;line-height:1.7;}
+.box-qa-from{font-size:13px;font-weight:600;color:#B0BAC3;margin-bottom:8px;}
+.box-qa-q{font-size:15px;line-height:1.7;margin-bottom:10px;color:#fff;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;}
+.box-qa-detail{font-size:14px;color:#6B71FF;cursor:pointer;text-align:right;padding:4px 12px;background:rgba(107,113,255,0.09);border-radius:0 0 10px 0;margin:-16px -16px 0 0;font-weight:600;}
+.box-qa-detail-body{display:none;padding:12px 0 0;margin-top:12px;border-top:1px solid rgba(255,255,255,0.08);}
 .reveal-btn{
-  padding:4px 10px;background:var(--primary-soft);border:1px solid rgba(236,72,153,0.25);
-  border-radius:8px;color:var(--primary);font-size:11px;font-weight:600;
+  padding:4px 10px;background:rgba(107,113,255,0.15);border:1px solid rgba(107,113,255,0.35);
+  border-radius:8px;color:#6B71FF;font-size:11px;font-weight:600;
   cursor:pointer;transition:all .2s;font-family:var(--sans);white-space:nowrap;
 }
-.reveal-btn:hover{background:rgba(236,72,153,0.2);}
-.box-qa-a{font-size:13px;line-height:1.7;color:var(--text-soft);padding:12px 14px;background:rgba(139,92,246,0.08);border-radius:10px;border-left:2px solid var(--secondary);}
+.reveal-btn:hover{background:rgba(107,113,255,0.25);}
+.box-qa-a{font-size:13px;line-height:1.7;color:#cfd6e0;padding:12px 14px;background:rgba(255,255,255,0.05);border-radius:10px;border-left:2px solid #6B71FF;}
 .box-qa-foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
 .follow-btn{
-  padding:8px 20px;background:var(--card);border:1px solid var(--border);
-  border-radius:20px;color:var(--text);font-size:12px;font-weight:600;
+  padding:8px 20px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+  border-radius:20px;color:#fff;font-size:12px;font-weight:600;
   cursor:pointer;transition:all .2s;font-family:var(--sans);
 }
-.follow-btn.following{background:var(--primary-soft);color:var(--primary);border-color:rgba(236,72,153,0.3);}
+.follow-btn.following{background:rgba(107,113,255,0.2);color:#6B71FF;border-color:rgba(107,113,255,0.35);}
 
 /* ===== 个人中心 ===== */
 .profile-header{padding:52px 20px 24px;display:flex;align-items:center;gap:16px;}
@@ -471,10 +486,15 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
 <!-- ===== 提问箱页面 ===== -->
 <div class="page" id="page-box">
   <div class="box-hero" id="boxHero">
-    <div class="avatar box-hero-avatar" id="boxAvatar"></div>
-    <div class="box-hero-name" id="boxName"></div>
-    <div class="box-hero-bio" id="boxBio"></div>
+    <div class="box-hero-top">
+      <div class="box-hero-user">
+        <svg class="box-heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <div class="box-hero-name" id="boxName"></div>
+      </div>
+      <button class="box-ask-btn" onclick="focusBoxInput()">匿名问我</button>
+    </div>
     <div class="box-hero-welcome">欢迎向我匿名提问，我公开回复的问题会出现在这个网页</div>
+    <div class="box-hero-bio" id="boxBio"></div>
     <div class="box-hero-stats">
       <div class="box-stat"><div class="box-stat-num" id="boxQCount">0</div><div class="box-stat-label">问答</div></div>
       <div class="box-stat"><div class="box-stat-num" id="boxFCount">0</div><div class="box-stat-label">粉丝</div></div>
@@ -964,8 +984,9 @@ function loadBox(){
   currentPage='box';
   document.getElementById('tabbar').style.display='none';
   const avatar=document.getElementById('boxAvatar');
-  avatar.innerHTML=user.avatar?'<img src="'+user.avatar+'">':user.nickname.charAt(0).toUpperCase();
-  document.getElementById('boxName').innerHTML=escapeHtml(user.nickname)+(checkVip(user)?' <span class="badge badge-vip">VIP</span>':'')+(user.isAdmin?' <span class="badge badge-admin">管理员</span>':'');
+  if(avatar){avatar.innerHTML=user.avatar?'<img src="'+user.avatar+'">':user.nickname.charAt(0).toUpperCase();}
+  const nameWrap=document.getElementById('boxName');
+  if(nameWrap){nameWrap.innerHTML=(user.avatar?'<span class="box-name-avatar"><img src="'+user.avatar+'"></span>':'')+escapeHtml(user.nickname)+(checkVip(user)?' <span class="badge badge-vip">VIP</span>':'')+(user.isAdmin?' <span class="badge badge-admin">管理员</span>':'');}
   document.getElementById('boxBio').textContent=user.bio||'';
   const publicMsgs=appData.messages.filter(m=>m.userId===user.id&&m.isPublic&&m.reply&&!m.parentId);
   document.getElementById('boxQCount').textContent=publicMsgs.length;
@@ -996,12 +1017,25 @@ function renderBoxQa(messages){
     const replies=appData.messages.filter(r=>r.parentId===m.id&&r.isPublic);
     return `
     <div class="card box-qa-item">
+      <div class="box-qa-from">来自 · 匿名提问</div>
       <div class="box-qa-q"><span>${escapeHtml(m.content)}</span>${revealHtml}</div>
-      <div class="box-qa-a">${escapeHtml(m.reply)}</div>
-      ${replies.length>0?replies.map(r=>'<div class="thread-item" style="margin-top:10px;"><div class="thread-q">追问: '+escapeHtml(r.content)+'</div>'+(r.reply?'<div class="thread-a">'+escapeHtml(r.reply)+'</div>':'')+'</div>').join(''):''}
-      <div class="box-qa-foot"><span class="inbox-time">${formatTime(m.createdAt)}</span></div>
+      <div class="box-qa-detail" onclick="toggleQaDetail('${m.id}')">查看详情</div>
+      <div class="box-qa-detail-body" id="qa-detail-${m.id}" style="display:none;">
+        <div class="box-qa-a">${escapeHtml(m.reply)}</div>
+        ${replies.length>0?replies.map(r=>'<div class="thread-item" style="margin-top:10px;"><div class="thread-q">追问: '+escapeHtml(r.content)+'</div>'+(r.reply?'<div class="thread-a">'+escapeHtml(r.reply)+'</div>':'')+'</div>').join(''):''}
+        <div class="box-qa-foot"><span class="inbox-time">${formatTime(m.createdAt)}</span></div>
+      </div>
     </div>`;
   }).join('');
+}
+function toggleQaDetail(id){
+  const el=document.getElementById('qa-detail-'+id);
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
+function focusBoxInput(){
+  const sec=document.getElementById('boxInputSection');
+  const el=document.getElementById('boxInput');
+  if(sec&&sec.style.display!=='none'&&el){sec.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(function(){el.focus();},400);}
 }
 document.getElementById('boxInput').addEventListener('input',function(){document.getElementById('boxCharCount').textContent=this.value.length+'/500';});
 let submittingQuestion=false;

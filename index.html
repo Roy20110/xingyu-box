@@ -358,6 +358,13 @@ textarea.input{resize:none;line-height:1.7;}
 .admin-qa-mini-q{color:var(--text);margin-bottom:4px;line-height:1.5;}
 .admin-qa-mini-a{color:var(--text-soft);padding-left:8px;border-left:2px solid var(--secondary);line-height:1.5;}
 .admin-qa-mini-meta{font-size:10px;color:var(--text-mute);margin-top:4px;}
+.admin-all-card{margin-bottom:10px;}
+.admin-all-head{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+.admin-all-head .badge{font-size:10px;padding:2px 8px;border-radius:10px;}
+.admin-all-time{font-size:10px;color:var(--text-mute);margin-left:auto;}
+.admin-all-q{font-size:13px;color:var(--text);line-height:1.6;margin-bottom:4px;}
+.admin-all-a{font-size:12px;color:var(--text-soft);padding-left:8px;border-left:2px solid var(--secondary);line-height:1.6;margin-bottom:4px;}
+.admin-all-meta{font-size:10px;color:var(--text-mute);line-height:1.6;}
 
 /* ===== 弹窗 ===== */
 .modal-overlay{
@@ -557,9 +564,11 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
   </div>
   <div class="admin-tabs">
     <div class="admin-tab active" onclick="switchAdminTab('users')" id="adminTabUsers">用户管理</div>
+    <div class="admin-tab" onclick="switchAdminTab('all')" id="adminTabAll">全部内容</div>
     <div class="admin-tab" onclick="switchAdminTab('orders')" id="adminTabOrders">订单审核</div>
   </div>
   <div class="admin-list" id="adminUsersPanel"><div id="adminUserList"></div></div>
+  <div class="admin-list" id="adminAllPanel" style="display:none;"><div id="adminAllList"></div></div>
   <div class="admin-list" id="adminOrdersPanel" style="display:none;"><div id="adminOrderList"></div></div>
 </div>
 
@@ -782,10 +791,13 @@ async function doLogin(){
   if(!account||!password){showToast('请填写完整信息');return;}
   const user=appData.users.find(u=>(u.account===account)&&u.password===password);
   if(!user){showToast('账号或密码错误');return;}
+  user.lastLoginAt=new Date().toISOString();
+  user.loginCount=(user.loginCount||0)+1;
   currentUser=user;
   localStorage.setItem('xy_current_user',JSON.stringify(user));
   showToast('登录成功');
   navigate('home');
+  saveData();
 }
 async function doRegister(){
   const account=document.getElementById('regAccount').value.trim();
@@ -1222,11 +1234,38 @@ function loadAdmin(){
 function switchAdminTab(tab){
   currentAdminTab=tab;
   document.getElementById('adminTabUsers').classList.toggle('active',tab==='users');
+  document.getElementById('adminTabAll').classList.toggle('active',tab==='all');
   document.getElementById('adminTabOrders').classList.toggle('active',tab==='orders');
   document.getElementById('adminUsersPanel').style.display=tab==='users'?'block':'none';
+  document.getElementById('adminAllPanel').style.display=tab==='all'?'block':'none';
   document.getElementById('adminOrdersPanel').style.display=tab==='orders'?'block':'none';
   if(tab==='users')loadAdminUsers();
+  if(tab==='all')loadAdminAll();
   if(tab==='orders')loadAdminOrders();
+}
+function loadAdminAll(){
+  const container=document.getElementById('adminAllList');
+  const allMsgs=appData.messages.slice().reverse();
+  if(allMsgs.length===0){container.innerHTML='<div class="empty"><p>暂无内容</p></div>';return;}
+  container.innerHTML=allMsgs.map(m=>{
+    const owner=appData.users.find(u=>u.id===m.userId);
+    const asker=m.askerUserId?appData.users.find(u=>u.id===m.askerUserId):null;
+    return `
+    <div class="card admin-all-card">
+      <div class="admin-all-head">
+        <span class="badge" style="background:${m.isPublic?'rgba(120,220,170,0.15)':'rgba(255,180,100,0.15)'};color:${m.isPublic?'#78dcaa':'#ffb464'};">${m.isPublic?'公开':'私密'}</span>
+        <span class="badge" style="background:rgba(140,160,255,0.15);color:#8ca0ff;">${asker?'登录提问':'匿名提问'}</span>
+        <span class="admin-all-time">${formatTime(m.createdAt)}</span>
+      </div>
+      <div class="admin-all-q">Q: ${escapeHtml(m.content)}</div>
+      ${m.reply?'<div class="admin-all-a">A: '+escapeHtml(m.reply)+'</div>':''}
+      <div class="admin-all-meta">
+        发给: ${owner?escapeHtml(owner.nickname)+' ('+escapeHtml(owner.account)+')':'未知'}
+        ${asker?' | 提问者: '+escapeHtml(asker.nickname)+' ('+escapeHtml(asker.account)+')':' | 提问者: 未登录匿名'}
+        ${m.isRevealed?' | 已解锁身份':''}
+      </div>
+    </div>`;
+  }).join('');
 }
 function loadAdminUsers(){
   const container=document.getElementById('adminUserList');
@@ -1240,6 +1279,7 @@ function loadAdminUsers(){
         <div class="admin-user-name">${escapeHtml(u.nickname)}${u.isAdmin?' <span class="badge badge-admin">管理员</span>':''}${checkVip(u)?' <span class="badge badge-vip">VIP</span>':''}</div>
         <div class="admin-user-account">${escapeHtml(u.account)}</div>
         <div class="admin-user-meta">${msgCount}条提问 | ${(u.followers||[]).length}粉丝 | 注册:${formatTime(u.createdAt)}</div>
+        <div class="admin-user-meta">上次登录:${u.lastLoginAt?formatTime(u.lastLoginAt):'从未登录'} | 登录${u.loginCount||0}次</div>
       </div>
       <div class="admin-user-actions">
         <button class="mini-btn reply" onclick="adminViewUserQa('${u.id}')">查看问答</button>

@@ -237,7 +237,8 @@ textarea.input{resize:none;line-height:1.7;}
 }
 .box-hero-avatar{width:80px;height:80px;margin:0 auto 14px;font-size:30px;}
 .box-hero-name{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:8px;}
-.box-hero-bio{font-size:13px;color:var(--text-soft);max-width:300px;margin:0 auto 18px;line-height:1.7;}
+.box-hero-bio{font-size:13px;color:var(--text-soft);max-width:300px;margin:0 auto 10px;line-height:1.7;}
+.box-hero-welcome{font-size:12px;color:var(--text-mute);max-width:300px;margin:0 auto 18px;line-height:1.7;padding:8px 14px;background:rgba(255,255,255,0.04);border-radius:10px;}
 .box-hero-stats{display:flex;justify-content:center;gap:24px;}
 .box-stat{text-align:center;}
 .box-stat-num{font-size:18px;font-weight:700;color:var(--primary);}
@@ -254,6 +255,7 @@ textarea.input{resize:none;line-height:1.7;}
 .char-count{font-size:11px;color:var(--text-mute);}
 .box-qa-section{padding:0 20px;}
 .box-qa-item{padding:16px;margin-bottom:12px;}
+.box-qa-tip{font-size:11px;color:var(--text-mute);text-align:center;padding:18px 10px 30px;line-height:1.7;}
 .box-qa-q{font-size:14px;line-height:1.7;margin-bottom:10px;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;}
 .reveal-btn{
   padding:4px 10px;background:var(--primary-soft);border:1px solid rgba(236,72,153,0.25);
@@ -472,6 +474,7 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
     <div class="avatar box-hero-avatar" id="boxAvatar"></div>
     <div class="box-hero-name" id="boxName"></div>
     <div class="box-hero-bio" id="boxBio"></div>
+    <div class="box-hero-welcome">欢迎向我匿名提问，我公开回复的问题会出现在这个网页</div>
     <div class="box-hero-stats">
       <div class="box-stat"><div class="box-stat-num" id="boxQCount">0</div><div class="box-stat-label">问答</div></div>
       <div class="box-stat"><div class="box-stat-num" id="boxFCount">0</div><div class="box-stat-label">粉丝</div></div>
@@ -490,6 +493,7 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
   <div class="box-qa-section" id="boxQaSection">
     <div class="section-head" style="padding:0 0 14px;"><h2>公开问答</h2></div>
     <div id="boxQaList"></div>
+    <div class="box-qa-tip">这里只显示已经公开回复的提问，没有公开回复的问题不会显示</div>
   </div>
 </div>
 
@@ -1042,9 +1046,13 @@ async function toggleFollow(userId){
 function getShareLink(){
   if(!currentUser)return;
   const link=window.location.origin+window.location.pathname+'#box/'+currentUser.id;
-  if(navigator.clipboard){navigator.clipboard.writeText(link).then(()=>showToast('链接已复制')).catch(()=>fallbackCopy(link));}else{fallbackCopy(link);}
+  const shareText='Hi，我正在使用<星语信箱>，点击下方链接，来向我匿名提问吧，Ask me anything\n'+link;
+  if(navigator.share){
+    navigator.share({title:'星语信箱',text:shareText}).catch(function(){fallbackCopy(shareText);});
+  }else if(navigator.clipboard){navigator.clipboard.writeText(shareText).then(()=>showToast('分享文案已复制')).catch(()=>fallbackCopy(shareText));}
+  else{fallbackCopy(shareText);}
 }
-function fallbackCopy(text){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showToast('链接已复制');}catch(e){showToast('复制失败');}document.body.removeChild(ta);}
+function fallbackCopy(text){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showToast('分享文案已复制');}catch(e){showToast('复制失败');}document.body.removeChild(ta);}
 
 // ===== 付费系统 =====
 function revealIdentity(msgId){

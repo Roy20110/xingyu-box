@@ -6,6 +6,7 @@
 <title>星语信箱 · 匿名提问箱</title>
 <link rel="preconnect" href="https://miaoda.feishu.cn">
 <link href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <style>
 :root{
   --bg:#0d0d1a;
@@ -403,6 +404,10 @@ textarea.input{resize:none;line-height:1.7;}
 .pay-amount-label{text-align:center;font-size:12px;color:var(--text-mute);margin-bottom:16px;}
 .upload-preview{width:70px;height:70px;margin:0 auto 12px;border-radius:10px;overflow:hidden;display:none;}
 .upload-preview img{width:100%;height:100%;object-fit:cover;}
+.qr-box{width:260px;height:260px;margin:16px auto 0;background:#fff;border-radius:14px;padding:10px;display:flex;align-items:center;justify-content:center;}
+.qr-box canvas,.qr-box img{width:240px;height:240px;border-radius:6px;}
+.qr-share-text{font-size:12px;color:var(--text-soft);text-align:center;margin:12px 0 4px;line-height:1.7;white-space:pre-line;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;word-break:break-all;}
+.qr-hint{font-size:11px;color:var(--text-mute);text-align:center;margin-bottom:14px;line-height:1.6;}
 .modal-tip{font-size:11px;color:var(--text-mute);margin-top:14px;line-height:1.7;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;}
 .modal-close{margin-top:14px;background:none;border:none;color:var(--text-mute);font-size:13px;cursor:pointer;font-family:var(--sans);width:100%;}
 
@@ -553,6 +558,11 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
       <div class="menu-item-text"><div class="menu-item-title">我的提问箱</div><div class="menu-item-desc">预览和分享你的提问箱</div></div>
       <div class="menu-item-arrow"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
     </div>
+    <div class="menu-item card" onclick="openQrModal()">
+      <div class="menu-item-icon" style="background:rgba(107,113,255,0.15);"><svg viewBox="0 0 24 24" style="fill:#6B71FF;"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm13-2h-2v3h-2v2h2v2h2v-2h3v-2h-3v-3z"/></svg></div>
+      <div class="menu-item-text"><div class="menu-item-title">我的永久二维码</div><div class="menu-item-desc">生成专属二维码，微信扫码直接进提问箱</div></div>
+      <div class="menu-item-arrow"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+    </div>
     <div class="menu-item card" onclick="exportData()">
       <div class="menu-item-icon" style="background:rgba(59,130,246,0.15);"><svg viewBox="0 0 24 24" style="fill:var(--accent);"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div>
       <div class="menu-item-text"><div class="menu-item-title">导出问答</div><div class="menu-item-desc">导出你的所有问答为文本</div></div>
@@ -609,6 +619,21 @@ body.theme-blue{--bg:#0a1420;--primary:#38bdf8;--secondary:#818cf8;}
   <div class="tabbar-item" onclick="navigate('profile')" id="nav-profile">
     <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
     <span>我的</span>
+  </div>
+</div>
+
+<!-- ===== 二维码弹窗 ===== -->
+<div class="modal-overlay" id="qrModal">
+  <div class="modal qr-modal">
+    <div class="modal-title">我的永久提问箱二维码</div>
+    <div class="qr-box">
+      <canvas id="qrcodeCanvas" width="260" height="260"></canvas>
+      <img id="qrcodeImg" alt="提问箱二维码" style="display:none;width:260px;height:260px;">
+    </div>
+    <div class="qr-share-text" id="qrText"></div>
+    <div class="qr-hint">此二维码永久不变，长按图片保存，微信扫码直接进入提问箱</div>
+    <button class="btn btn-primary" style="width:100%;" onclick="saveQrImage()">保存二维码图片</button>
+    <button class="modal-close" onclick="closeModal('qrModal')">关闭</button>
   </div>
 </div>
 
@@ -820,7 +845,8 @@ async function doLogin(){
   currentUser=user;
   localStorage.setItem('xy_current_user',JSON.stringify(user));
   showToast('登录成功');
-  navigate('home');
+  if(enterBoxMode){currentBoxUserId=currentUser.id;loadBox();}
+  else{navigate('home');}
   saveData();
 }
 async function doRegister(){
@@ -838,7 +864,8 @@ async function doRegister(){
   currentUser=newUser;
   localStorage.setItem('xy_current_user',JSON.stringify(newUser));
   showToast(isAdmin?'注册成功，管理员已激活':'注册成功');
-  navigate('home');
+  if(enterBoxMode){currentBoxUserId=currentUser.id;loadBox();}
+  else{navigate('home');}
 }
 function logout(){currentUser=null;localStorage.removeItem('xy_current_user');navigate('auth');}
 
@@ -1087,6 +1114,35 @@ function getShareLink(){
   else{fallbackCopy(shareText);}
 }
 function fallbackCopy(text){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showToast('分享文案已复制');}catch(e){showToast('复制失败');}document.body.removeChild(ta);}
+
+// ===== 永久二维码 =====
+function getBoxUrl(userId){
+  return window.location.origin+window.location.pathname+'#box/'+userId;
+}
+function openQrModal(){
+  if(!currentUser){showToast('请先登录');return;}
+  const boxUrl=getBoxUrl(currentUser.id);
+  const shareText='Hi，我正在使用<星语信箱>，点击下方链接，来向我匿名提问吧，Ask me anything\n'+boxUrl;
+  document.getElementById('qrText').textContent=shareText;
+  const canvas=document.getElementById('qrcodeCanvas');
+  const img=document.getElementById('qrcodeImg');
+  canvas.style.display='block';img.style.display='none';
+  if(window.QRCode){
+    QRCode.toCanvas(canvas,boxUrl,{width:260,margin:2,color:{dark:'#000000',light:'#ffffff'}}).then(function(){
+      img.src=canvas.toDataURL('image/png');
+      canvas.style.display='none';img.style.display='block';
+    }).catch(function(){showToast('二维码生成失败');});
+  }else{showToast('二维码组件加载中，请稍后重试');}
+  document.getElementById('qrModal').classList.add('active');
+}
+function saveQrImage(){
+  const img=document.getElementById('qrcodeImg');
+  if(!img.src){showToast('二维码还没生成好');return;}
+  const a=document.createElement('a');
+  a.href=img.src;a.download='我的提问箱二维码.png';
+  document.body.appendChild(a);a.click();a.remove();
+  showToast('图片已保存，长按也可以保存');
+}
 
 // ===== 付费系统 =====
 function revealIdentity(msgId){
@@ -1416,12 +1472,15 @@ async function rejectOrder(orderId){
 }
 
 // ===== 路由 =====
+let enterBoxMode=false;
 function parseRoute(){
   const hash=window.location.hash;
+  try{enterBoxMode=new URLSearchParams(window.location.search).get('enter')==='box';}catch(e){enterBoxMode=false;}
   if(hash.startsWith('#box/')){
     const userId=hash.substring(5);
     if(userId){currentBoxUserId=userId;loadBox();return;}
   }
+  if(enterBoxMode&&currentUser){currentBoxUserId=currentUser.id;loadBox();return;}
   if(currentUser)navigate('home');
   else navigate('auth');
 }

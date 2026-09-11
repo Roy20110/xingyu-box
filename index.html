@@ -266,6 +266,11 @@ textarea.input{resize:none;line-height:1.7;}
 .box-textarea::placeholder{color:#8b95a6;}
 .box-input-foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
 .char-count{font-size:11px;color:#8b95a6;}
+.box-login-tip{padding:0 20px 24px;}
+.box-login-tip .box-login-card{padding:24px 18px;background:#37404F;border-radius:15px;text-align:center;}
+.box-login-tip .box-login-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:8px;}
+.box-login-tip .box-login-desc{font-size:12px;color:#8b95a6;line-height:1.7;margin-bottom:16px;}
+.box-login-tip .btn-primary{width:100%;}
 .box-qa-section{padding:0 20px;}
 .box-qa-item{padding:16px;margin-bottom:14px;background:#37404F;border-radius:15px;border:none;}
 .box-qa-tip{font-size:12px;color:#8b95a6;text-align:center;padding:18px 10px 30px;line-height:1.7;}
@@ -526,6 +531,9 @@ body::before{display:none;}
 .box-textarea{background:#fff;color:#111318;border:1px solid #e3e6eb;border-radius:10px;padding:12px;}
 .box-qa-item{background:#fff;border:1px solid #eef0f3;}
 .box-qa-tip{color:#9aa3af;}
+#page-box .box-login-tip .box-login-card{background:#fff;border:1px solid #eef0f3;}
+#page-box .box-login-tip .box-login-title{color:#111318;}
+#page-box .box-login-tip .box-login-desc{color:#9aa3af;}
 /* 提问箱卡片（box） */
 .box-qa-card{background:#fff;}
 /* 主页/登录 */
@@ -695,6 +703,13 @@ body::before{display:none;}
         <span class="char-count" id="boxCharCount">0/500</span>
         <button class="btn btn-primary" onclick="submitQuestion()">发送提问</button>
       </div>
+    </div>
+  </div>
+  <div class="box-login-tip" id="boxLoginTip" style="display:none;">
+    <div class="box-login-card">
+      <div class="box-login-title">登录后即可提问</div>
+      <div class="box-login-desc">需要注册并登录账号，才可以向该信箱提交提问</div>
+      <button class="btn btn-primary" onclick="goLoginFromBox()">登录 / 注册</button>
     </div>
   </div>
   <div class="box-qa-section" id="boxQaSection">
@@ -941,6 +956,7 @@ let appData = { users: [], messages: [], payOrders: [], notifications: [], siteN
 let currentUser = null;
 let currentPage = 'auth';
 let currentBoxUserId = null;
+let pendingBoxUserId = null;
 let currentReplyMsgId = null;
 let currentReplyVisibility = 'public';
 let currentPayType = 'reveal';
@@ -1060,7 +1076,8 @@ async function doRegister(){
   currentUser=newUser;
   localStorage.setItem('xy_current_user',JSON.stringify(newUser));
   showToast(isAdmin?'注册成功，管理员已激活':'注册成功');
-  if(enterBoxMode){currentBoxUserId=currentUser.id;loadBox();}
+  if(pendingBoxUserId){currentBoxUserId=pendingBoxUserId;pendingBoxUserId=null;loadBox();}
+  else if(enterBoxMode){currentBoxUserId=currentUser.id;loadBox();}
   else{navigate('home');}
 }
 function logout(){currentUser=null;localStorage.removeItem('xy_current_user');navigate('auth');}
@@ -1270,7 +1287,16 @@ function loadBox(){
   document.getElementById('boxQCount').textContent=publicMsgs.length;
   document.getElementById('boxFCount').textContent=(user.followers||[]).length;
   const isOwner=currentUser&&currentUser.id===user.id;
-  document.getElementById('boxInputSection').style.display=user.boxEnabled&&!isOwner?'block':'none';
+  const boxInputSec=document.getElementById('boxInputSection');
+  const boxLoginTip=document.getElementById('boxLoginTip');
+  const boxClosed=!user.boxEnabled&&!isOwner;
+  if(!currentUser&&!isOwner&&!boxClosed){
+    if(boxInputSec)boxInputSec.style.display='none';
+    if(boxLoginTip)boxLoginTip.style.display='block';
+  }else{
+    if(boxLoginTip)boxLoginTip.style.display='none';
+    if(boxInputSec)boxInputSec.style.display=user.boxEnabled&&!isOwner?'block':'none';
+  }
   if(!user.boxEnabled&&!isOwner){document.getElementById('boxQaList').innerHTML='<div class="empty"><p>该用户的提问箱已关闭</p></div>';}
   const followWrap=document.getElementById('boxFollowBtnWrap');
   if(isOwner){followWrap.innerHTML='<button class="btn btn-ghost" onclick="getShareLink()">分享我的提问箱</button>';}
@@ -1310,7 +1336,12 @@ function toggleQaDetail(id){
   const el=document.getElementById('qa-detail-'+id);
   if(el)el.style.display=el.style.display==='none'?'block':'none';
 }
+function goLoginFromBox(){
+  if(!pendingBoxUserId&&currentBoxUserId)pendingBoxUserId=currentBoxUserId;
+  navigate('auth');
+}
 function focusBoxInput(){
+  if(!currentUser){showToast('请先登录后提问');goLoginFromBox();return;}
   const sec=document.getElementById('boxInputSection');
   const el=document.getElementById('boxInput');
   if(sec&&sec.style.display!=='none'&&el){sec.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(function(){el.focus();},400);}
@@ -1323,6 +1354,7 @@ async function submitQuestion(){
   const sendBtn=document.querySelector('#boxInputSection .btn-primary');
   if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='发送中...';}
   try{
+  if(!currentUser){showToast('请先登录后提问');goLoginFromBox();return;}
   const content=document.getElementById('boxInput').value.trim();
   if(!content){showToast('请输入问题内容');return;}
   if(containsSensitive(content)){showToast('内容包含敏感词，请修改后再发送');return;}
@@ -1875,8 +1907,14 @@ function parseRoute(){
   try{enterBoxMode=new URLSearchParams(window.location.search).get('enter')==='box';}catch(e){enterBoxMode=false;}
   if(hash.startsWith('#box/')){
     const userId=hash.substring(5);
-    if(userId){currentBoxUserId=userId;loadBox();return;}
+    if(userId){
+      currentBoxUserId=userId;
+      if(!currentUser)pendingBoxUserId=userId;
+      loadBox();
+      return;
+    }
   }
+  pendingBoxUserId=null;
   if(enterBoxMode&&currentUser){currentBoxUserId=currentUser.id;loadBox();return;}
   if(currentUser)navigate('home');
   else navigate('auth');

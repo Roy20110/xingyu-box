@@ -1057,7 +1057,8 @@ async function doLogin(){
   currentUser=user;
   localStorage.setItem('xy_current_user',JSON.stringify(user));
   showToast('登录成功');
-  if(enterBoxMode){currentBoxUserId=currentUser.id;loadBox();}
+  if(pendingBoxUserId){currentBoxUserId=pendingBoxUserId;pendingBoxUserId=null;loadBox();}
+  else if(enterBoxMode){currentBoxUserId=currentUser.id;loadBox();}
   else{navigate('home');}
   saveData();
 }

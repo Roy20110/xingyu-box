@@ -187,6 +187,7 @@ textarea.input{resize:none;line-height:1.7;}
 .section-head{display:flex;align-items:center;justify-content:space-between;padding:0 20px;margin:24px 0 14px;}
 .section-head h2{font-family:var(--serif);font-size:17px;font-weight:700;}
 .section-head a{font-size:12px;color:var(--primary);font-weight:600;cursor:pointer;text-decoration:none;}
+.feed-sub-tip{font-size:12px;color:var(--text-mute);padding:0 20px 2px;line-height:1.7;}
 .feed{padding:0 20px;}
 .feed-item{padding:16px;margin-bottom:12px;cursor:pointer;}
 .feed-item-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
@@ -653,7 +654,8 @@ body::before{display:none;}
       </div>
     </div>
   </div>
-  <div class="section-head"><h2>最新问答</h2><a onclick="refreshFeed()">刷新</a></div>
+  <div class="section-head"><h2>我的公开问答</h2><a onclick="refreshFeed()">刷新</a></div>
+  <div class="feed-sub-tip">你公开回复的问答只出现在分享出去的提问箱链接里，不公开全站</div>
   <div class="feed" id="feedList"></div>
 </div>
 
@@ -1085,9 +1087,13 @@ function logout(){currentUser=null;localStorage.removeItem('xy_current_user');na
 
 // ===== 首页/广场 =====
 function loadFeed(){
-  const publicMsgs=appData.messages.filter(m=>m.isPublic&&m.reply&&!m.parentId);
   const container=document.getElementById('feedList');
-  if(publicMsgs.length===0){container.innerHTML='<div class="empty"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><p>还没有公开问答，快去提问吧</p></div>';return;}
+  if(!currentUser){container.innerHTML='';return;}
+  const publicMsgs=appData.messages.filter(m=>m.userId===currentUser.id&&m.isPublic&&m.reply&&!m.parentId);
+  if(publicMsgs.length===0){
+    container.innerHTML='<div class="empty"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><p>你还没有公开回复的问答</p><p style="font-size:12px;color:var(--text-mute);margin-top:4px;">公开回复后，只有打开你分享出去的提问箱链接才能看到</p><button class="btn btn-primary" style="margin-top:16px;" onclick="viewMyBox()">分享我的提问箱</button></div>';
+    return;
+  }
   container.innerHTML=publicMsgs.slice().reverse().map(m=>{
     const user=appData.users.find(u=>u.id===m.userId);
     const isLiked=likedMessages.includes(m.id);
